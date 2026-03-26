@@ -17,11 +17,30 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'generator']);
 
   const now = useMemo(() => new Date(), []);
 
   useEffect(() => {
     detect.getNetworkInfo().then(setNetwork);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get('email') || '';
+    const subject = params.get('subject');
+    const ext = params.get('ext');
+
+    if (email) {
+      setSupportEmail(email);
+      setGeneratorEmail(email);
+    }
+    if (subject) {
+      setGeneratorSubject(subject);
+    }
+    if (ext) {
+      setEnabledExtensions(ext.split(','));
+    }
   }, []);
 
   const techPairs = useMemo(() => {
@@ -173,6 +192,7 @@ const App: React.FC = () => {
     const base = window.location.href.split('?')[0];
     const q = [`email=${encodeURIComponent(generatorEmail)}`];
     if (generatorSubject) q.push(`subject=${encodeURIComponent(generatorSubject)}`);
+    if (enabledExtensions.length > 0) q.push(`ext=${enabledExtensions.join(',')}`);
     const link = `${base}?${q.join('&')}`;
     setGeneratedLink(link);
     setGeneratorStatus('Link generated. You can now copy it.');
@@ -186,6 +206,7 @@ const App: React.FC = () => {
       const base = window.location.href.split('?')[0];
       const q = [`email=${encodeURIComponent(generatorEmail)}`];
       if (generatorSubject) q.push(`subject=${encodeURIComponent(generatorSubject)}`);
+      if (enabledExtensions.length > 0) q.push(`ext=${enabledExtensions.join(',')}`);
       return `${base}?${q.join('&')}`;
     })() : '');
 
@@ -197,6 +218,12 @@ const App: React.FC = () => {
     } else {
       setGeneratorStatus('Could not copy automatically. Please copy the link on screen.');
     }
+  };
+
+  const toggleExtension = (ext: string) => {
+    setEnabledExtensions(prev => 
+      prev.includes(ext) ? prev.filter(e => e !== ext) : [...prev, ext]
+    );
   };
 
   const matchesFilter = (topic: any) => {
@@ -287,89 +314,116 @@ const App: React.FC = () => {
           <div className="small-note">{actionStatus}</div>
         </Card>
 
-        <Card title="Help with common browser problems" className="help">
-          <div className="help-head">
-            <div>
-              <div className="small-note">
-                {showAllHelp ? 'Showing all help topics.' : `Showing topics that best match ${browser.name} on ${os}.`}
+        {enabledExtensions.includes('help') && (
+          <Card title="Help with common browser problems" className="help">
+            <div className="help-head">
+              <div>
+                <div className="small-note">
+                  {showAllHelp ? 'Showing all help topics.' : `Showing topics that best match ${browser.name} on ${os}.`}
+                </div>
+              </div>
+              <button className="btn btn-secondary" onClick={() => setShowAllHelp(!showAllHelp)}>
+                {showAllHelp ? 'Show only relevant help' : 'Show all help topics'}
+              </button>
+            </div>
+
+            <div className="guide-box">
+              <h3>Friendly troubleshooting guide</h3>
+              <div className="small-note">If you are not sure where to start, go in this order and do just one thing at a time.</div>
+              <div className="guide-steps">
+                <div className="guide-step"><span className="step-number">1</span><strong>Read the top script to support.</strong><br />Tell them your browser, operating system, and device type exactly as shown.</div>
+                <div className="guide-step"><span className="step-number">2</span><strong>Check whether you are online.</strong><br />If the page says you are offline, reconnect to the internet before trying again.</div>
+                <div className="guide-step"><span className="step-number">3</span><strong>Close and reopen the browser.</strong><br />Then return to the banking site and try again.</div>
               </div>
             </div>
-            <button className="btn btn-secondary" onClick={() => setShowAllHelp(!showAllHelp)}>
-              {showAllHelp ? 'Show only relevant help' : 'Show all help topics'}
-            </button>
-          </div>
 
-          <div className="guide-box">
-            <h3>Friendly troubleshooting guide</h3>
-            <div className="small-note">If you are not sure where to start, go in this order and do just one thing at a time.</div>
-            <div className="guide-steps">
-              <div className="guide-step"><span className="step-number">1</span><strong>Read the top script to support.</strong><br />Tell them your browser, operating system, and device type exactly as shown.</div>
-              <div className="guide-step"><span className="step-number">2</span><strong>Check whether you are online.</strong><br />If the page says you are offline, reconnect to the internet before trying again.</div>
-              <div className="guide-step"><span className="step-number">3</span><strong>Close and reopen the browser.</strong><br />Then return to the banking site and try again.</div>
-            </div>
-          </div>
+            {helpTopics.filter(matchesFilter).map((topic, i) => (
+              <details key={i} className="help-topic">
+                <summary>{topic.title}</summary>
+                <ol className="steps">
+                  {topic.steps.map((step, j) => <li key={j}>{step}</li>)}
+                </ol>
+              </details>
+            ))}
+          </Card>
+        )}
 
-          {helpTopics.filter(matchesFilter).map((topic, i) => (
-            <details key={i} className="help-topic">
-              <summary>{topic.title}</summary>
-              <ol className="steps">
-                {topic.steps.map((step, j) => <li key={j}>{step}</li>)}
-              </ol>
+        {enabledExtensions.includes('common') && (
+          <Card title="Privacy, VPN, and Tor" className="common-problems">
+            <CommonProblems />
+          </Card>
+        )}
+
+        {enabledExtensions.includes('tech') && (
+          <Card title="Technical details for support" className="tech">
+            <p className="mini-note">If support needs more detail, open the section below.</p>
+            <details>
+              <summary>Show technical details and debugging information</summary>
+              <div className="tech-grid">
+                {techPairs.map(([label, value], i) => (
+                  <div key={i} className="tech-item">
+                    <div className="label">{label}</div>
+                    <div className="value">{value}</div>
+                  </div>
+                ))}
+              </div>
             </details>
-          ))}
-        </Card>
+          </Card>
+        )}
 
-        <Card title="Privacy, VPN, and Tor" className="common-problems">
-          <CommonProblems />
-        </Card>
+        {enabledExtensions.includes('generator') && (
+          <Card title="Create a support link" className="generator">
+            <p className="mini-note">Support staff can build a link with an email address, subject, and active extensions.</p>
+            <div className="action-layout">
+              <div className="field-group">
+                <label className="field-label" htmlFor="generatorEmail">Support email address</label>
+                <input 
+                  className="field-input" 
+                  id="generatorEmail" 
+                  type="email" 
+                  placeholder="support@example.com" 
+                  value={generatorEmail}
+                  onChange={(e) => setGeneratorEmail(e.target.value)}
+                />
+              </div>
+              <div className="field-group">
+                <label className="field-label" htmlFor="generatorSubject">Email subject</label>
+                <input 
+                  className="field-input" 
+                  id="generatorSubject" 
+                  type="text" 
+                  value={generatorSubject}
+                  onChange={(e) => setGeneratorSubject(e.target.value)}
+                />
+              </div>
+            </div>
 
-        <Card title="Technical details for support" className="tech">
-          <p className="mini-note">If support needs more detail, open the section below.</p>
-          <details>
-            <summary>Show technical details and debugging information</summary>
-            <div className="tech-grid">
-              {techPairs.map(([label, value], i) => (
-                <div key={i} className="tech-item">
-                  <div className="label">{label}</div>
-                  <div className="value">{value}</div>
-                </div>
-              ))}
+            <div className="extension-toggles" style={{marginTop: '15px'}}>
+              <div className="small-note" style={{marginBottom: '8px'}}>Active Modules (Extensions)</div>
+              <div style={{display: 'flex', gap: '15px', flexWrap: 'wrap'}}>
+                <label style={{display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px'}}>
+                  <input type="checkbox" checked={enabledExtensions.includes('help')} onChange={() => toggleExtension('help')} /> Help Guide
+                </label>
+                <label style={{display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px'}}>
+                  <input type="checkbox" checked={enabledExtensions.includes('common')} onChange={() => toggleExtension('common')} /> Privacy/VPN
+                </label>
+                <label style={{display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px'}}>
+                  <input type="checkbox" checked={enabledExtensions.includes('tech')} onChange={() => toggleExtension('tech')} /> Tech Details
+                </label>
+                <label style={{display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px'}}>
+                  <input type="checkbox" checked={enabledExtensions.includes('generator')} onChange={() => toggleExtension('generator')} /> Link Generator
+                </label>
+              </div>
             </div>
-          </details>
-        </Card>
 
-        <Card title="Create a support link" className="generator">
-          <p className="mini-note">Support staff can build a link with an email address and subject.</p>
-          <div className="action-layout">
-            <div className="field-group">
-              <label className="field-label" htmlFor="generatorEmail">Support email address</label>
-              <input 
-                className="field-input" 
-                id="generatorEmail" 
-                type="email" 
-                placeholder="support@example.com" 
-                value={generatorEmail}
-                onChange={(e) => setGeneratorEmail(e.target.value)}
-              />
+            <div className="button-row" style={{marginTop:'18px'}}>
+              <button className="btn btn-primary" onClick={handleGenerateLink}>Generate link</button>
+              <button className="btn btn-neutral" onClick={handleCopyLink}>Copy link</button>
             </div>
-            <div className="field-group">
-              <label className="field-label" htmlFor="generatorSubject">Email subject</label>
-              <input 
-                className="field-input" 
-                id="generatorSubject" 
-                type="text" 
-                value={generatorSubject}
-                onChange={(e) => setGeneratorSubject(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="button-row" style={{marginTop:'14px'}}>
-            <button className="btn btn-primary" onClick={handleGenerateLink}>Generate link</button>
-            <button className="btn btn-neutral" onClick={handleCopyLink}>Copy link</button>
-          </div>
-          {generatedLink && <div className="generated-link">{generatedLink}</div>}
-          <div className="small-note">{generatorStatus}</div>
-        </Card>
+            {generatedLink && <div className="generated-link">{generatedLink}</div>}
+            <div className="small-note">{generatorStatus}</div>
+          </Card>
+        )}
       </section>
 
       <div className="footer">Powered by UserInfo.</div>
