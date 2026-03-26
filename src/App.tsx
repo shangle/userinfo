@@ -10,6 +10,7 @@ import KnowledgeBase from './components/KnowledgeBase';
 import SalesDeck from './components/SalesDeck';
 import WebRTCLeaks from './components/WebRTCLeaks';
 import GPUAudit from './components/GPUAudit';
+import NetworkProtocol from './components/NetworkProtocol';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -21,6 +22,7 @@ const App: React.FC = () => {
   const [gpu] = useState(detect.getGPUInfo());
   const [network, setNetwork] = useState<detect.NetworkInfo | null>(null);
   const [webrtc, setWebrtc] = useState<detect.WebRTCInfo | null>(null);
+  const [protocol, setProtocol] = useState<detect.NetworkProtocolInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
   const [generatorEmail, setGeneratorEmail] = useState('');
@@ -28,13 +30,14 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'generator', 'kb']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'generator', 'kb']);
 
   const now = useMemo(() => new Date(), []);
 
   useEffect(() => {
     detect.getNetworkInfo().then(setNetwork);
     detect.getWebRTCInfo().then(setWebrtc);
+    setProtocol(detect.getNetworkProtocolInfo());
   }, []);
 
   useEffect(() => {
@@ -115,6 +118,12 @@ const App: React.FC = () => {
     basePairs.push(['GPU Vendor', gpu.vendor]);
     basePairs.push(['GPU Renderer', gpu.renderer]);
     basePairs.push(['Hardware Acceleration', gpu.isHardwareAccelerated ? 'Enabled' : 'Disabled (or not detected)']);
+
+    if (protocol) {
+      basePairs.push(['Network Protocol', protocol.protocol]);
+      basePairs.push(['HTTP/3 Support', protocol.h3Support]);
+      basePairs.push(['QUIC Status', protocol.isQuic ? 'Active' : 'Not active']);
+    }
 
     return [
       ...basePairs,
@@ -438,6 +447,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('protocol') && (
+              <Card title="Network Protocol & HTTP/3" className="protocol">
+                <NetworkProtocol info={protocol} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('gpu') && (
               <Card title="GPU & Hardware Acceleration Audit" className="gpu">
                 <GPUAudit info={gpu} />
@@ -491,6 +506,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('webrtc')} onChange={() => toggleExtension('webrtc')} /> WebRTC Leak Test
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('protocol')} onChange={() => toggleExtension('protocol')} /> Network Protocol
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('gpu')} onChange={() => toggleExtension('gpu')} /> GPU Audit

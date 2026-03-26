@@ -16,7 +16,8 @@ import {
   isValidEmail,
   getNetworkInfo,
   getWebRTCInfo,
-  getGPUInfo
+  getGPUInfo,
+  getNetworkProtocolInfo
 } from './detection';
 
 describe('detection utils', () => {
@@ -429,6 +430,55 @@ describe('detection utils', () => {
       const info = getGPUInfo();
       expect(info.vendor).toBe('Not available');
       expect(info.isHardwareAccelerated).toBe(false);
+    });
+  });
+
+  describe('getNetworkProtocolInfo', () => {
+    it('detects H3 from performance entries', () => {
+      const mockNavigationEntry = {
+        nextHopProtocol: 'h3',
+      };
+      const mockResourceEntries = [
+        { nextHopProtocol: 'h2' },
+        { nextHopProtocol: 'h3' },
+      ];
+
+      vi.stubGlobal('performance', {
+        getEntriesByType: (type: string) => {
+          if (type === 'navigation') return [mockNavigationEntry];
+          if (type === 'resource') return mockResourceEntries;
+          return [];
+        },
+      });
+
+      const info = getNetworkProtocolInfo();
+      expect(info.protocol).toBe('h3');
+      expect(info.isHttp3).toBe(true);
+      expect(info.h3Support).toBe('Supported & Active');
+    });
+
+    it('detects browser support when not active', () => {
+      vi.stubGlobal('performance', {
+        getEntriesByType: () => [],
+      });
+      vi.stubGlobal('navigator', {
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0',
+      });
+      (window as any).chrome = {};
+
+      const info = getNetworkProtocolInfo();
+      expect(info.isHttp3).toBe(false);
+      expect(info.h3Support).toBe('Browser Supports (Not Active)');
+    });
+
+    it('handles errors gracefully', () => {
+      vi.stubGlobal('performance', {
+        getEntriesByType: () => { throw new Error(); },
+      });
+
+      const info = getNetworkProtocolInfo();
+      expect(info.protocol).toBe('Error detecting');
+      expect(info.h3Support).toBe('Unknown');
     });
   });
 });

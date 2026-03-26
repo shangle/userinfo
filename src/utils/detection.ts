@@ -193,6 +193,50 @@ export interface GPUInfo {
   isHardwareAccelerated: boolean;
 }
 
+export interface NetworkProtocolInfo {
+  protocol: string;
+  isHttp3: boolean;
+  isQuic: boolean;
+  h3Support: string;
+}
+
+export const getNetworkProtocolInfo = (): NetworkProtocolInfo => {
+  try {
+    const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    const protocol = navigationEntry?.nextHopProtocol || 'unknown';
+    
+    // Check if the protocol is HTTP/3 or QUIC
+    const isHttp3 = protocol.includes('h3') || protocol.includes('http/3');
+    const isQuic = protocol.includes('quic');
+
+    // Also check other resources to see if any are using h3
+    const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+    const hasH3Resource = resources.some(r => r.nextHopProtocol.includes('h3') || r.nextHopProtocol.includes('http/3'));
+
+    let h3Support = 'Not Detected';
+    if (isHttp3 || hasH3Resource) {
+      h3Support = 'Supported & Active';
+    } else if ((window as any).chrome || /Firefox/.test(navigator.userAgent)) {
+      // Modern browsers generally support H3 even if it's not active for this specific origin
+      h3Support = 'Browser Supports (Not Active)';
+    }
+
+    return {
+      protocol,
+      isHttp3: isHttp3 || hasH3Resource,
+      isQuic: isQuic || protocol.includes('quic'),
+      h3Support
+    };
+  } catch (e) {
+    return {
+      protocol: 'Error detecting',
+      isHttp3: false,
+      isQuic: false,
+      h3Support: 'Unknown'
+    };
+  }
+};
+
 export const getGPUInfo = (): GPUInfo => {
   try {
     const canvas = document.createElement('canvas');
