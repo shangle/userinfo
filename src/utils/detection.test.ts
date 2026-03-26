@@ -17,7 +17,8 @@ import {
   getNetworkInfo,
   getWebRTCInfo,
   getGPUInfo,
-  getNetworkProtocolInfo
+  getNetworkProtocolInfo,
+  detectExtensionConflicts
 } from './detection';
 
 describe('detection utils', () => {
@@ -479,6 +480,57 @@ describe('detection utils', () => {
       const info = getNetworkProtocolInfo();
       expect(info.protocol).toBe('Error detecting');
       expect(info.h3Support).toBe('Unknown');
+    });
+  });
+
+  describe('detectExtensionConflicts', () => {
+    it('detects Grammarly from attributes', () => {
+      vi.stubGlobal('document', {
+        documentElement: { attributes: [{ name: 'data-grammarly-part', value: 'test' }] },
+        body: { attributes: [] },
+        querySelector: vi.fn().mockReturnValue(null),
+      });
+      const info = detectExtensionConflicts();
+      expect(info.detected).toBe(true);
+      expect(info.conflicts).toContain('Grammarly');
+    });
+
+    it('detects Dark Reader from global variables', () => {
+      vi.stubGlobal('document', {
+        documentElement: { attributes: [] },
+        body: { attributes: [] },
+        querySelector: vi.fn().mockReturnValue(null),
+      });
+      (window as any).__darkreader = {};
+      const info = detectExtensionConflicts();
+      expect(info.detected).toBe(true);
+      expect(info.conflicts).toContain('Dark Reader');
+      delete (window as any).__darkreader;
+    });
+
+    it('detects LastPass from injected elements', () => {
+      vi.stubGlobal('document', {
+        documentElement: { attributes: [] },
+        body: { attributes: [] },
+        querySelector: vi.fn().mockImplementation((selector) => {
+          if (selector === '[id*="lastpass"]') return {};
+          return null;
+        }),
+      });
+      const info = detectExtensionConflicts();
+      expect(info.detected).toBe(true);
+      expect(info.conflicts).toContain('LastPass');
+    });
+
+    it('returns no conflicts when none detected', () => {
+      vi.stubGlobal('document', {
+        documentElement: { attributes: [] },
+        body: { attributes: [] },
+        querySelector: vi.fn().mockReturnValue(null),
+      });
+      const info = detectExtensionConflicts();
+      expect(info.detected).toBe(false);
+      expect(info.conflicts).toHaveLength(0);
     });
   });
 });

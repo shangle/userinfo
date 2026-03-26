@@ -200,6 +200,60 @@ export interface NetworkProtocolInfo {
   h3Support: string;
 }
 
+export interface ExtensionConflictInfo {
+  detected: boolean;
+  conflicts: string[];
+}
+
+export const detectExtensionConflicts = (): ExtensionConflictInfo => {
+  const conflicts: string[] = [];
+
+  // 1. Check for common attributes on document element or body
+  const docAttrs = document.documentElement.attributes;
+  const bodyAttrs = document.body?.attributes || [];
+
+  const checkAttrs = (attrs: NamedNodeMap | Attr[]) => {
+    for (let i = 0; i < attrs.length; i++) {
+      const name = attrs[i].name.toLowerCase();
+      if (name.includes('grammarly')) conflicts.push('Grammarly');
+      if (name.includes('darkreader')) conflicts.push('Dark Reader');
+      if (name.includes('lastpass')) conflicts.push('LastPass');
+      if (name.includes('bitwarden')) conflicts.push('Bitwarden');
+      if (name.includes('honey')) conflicts.push('Honey');
+      if (name.includes('ghostery')) conflicts.push('Ghostery');
+      if (name.includes('adblock')) conflicts.push('AdBlocker');
+    }
+  };
+
+  checkAttrs(Array.from(docAttrs));
+  checkAttrs(Array.from(bodyAttrs));
+
+  // 2. Check for global variables
+  const win = window as any;
+  if (win.grammarly || win.Grammarly) conflicts.push('Grammarly');
+  if (win.__darkreader) conflicts.push('Dark Reader');
+  if (win.lpInjected || win.LpInjected) conflicts.push('LastPass');
+  if (win.bitwarden || win.Bitwarden) conflicts.push('Bitwarden');
+  if (win.honey || win.Honey) conflicts.push('Honey');
+  if (win.__REACT_DEVTOOLS_GLOBAL_HOOK__) conflicts.push('React Developer Tools');
+  if (win.__REDUX_DEVTOOLS_EXTENSION__) conflicts.push('Redux DevTools');
+  if (win._ghostery) conflicts.push('Ghostery');
+
+  // 3. Check for injected elements
+  if (document.querySelector('grammarly-desktop-integration')) conflicts.push('Grammarly');
+  if (document.querySelector('[id*="lastpass"]')) conflicts.push('LastPass');
+  if (document.querySelector('[class*="bitwarden"]')) conflicts.push('Bitwarden');
+  if (document.querySelector('style[id*="dark-reader"]')) conflicts.push('Dark Reader');
+
+  // Remove duplicates
+  const uniqueConflicts = Array.from(new Set(conflicts));
+
+  return {
+    detected: uniqueConflicts.length > 0,
+    conflicts: uniqueConflicts
+  };
+};
+
 export const getNetworkProtocolInfo = (): NetworkProtocolInfo => {
   try {
     const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;

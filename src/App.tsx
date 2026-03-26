@@ -11,6 +11,7 @@ import SalesDeck from './components/SalesDeck';
 import WebRTCLeaks from './components/WebRTCLeaks';
 import GPUAudit from './components/GPUAudit';
 import NetworkProtocol from './components/NetworkProtocol';
+import ExtensionConflicts from './components/ExtensionConflicts';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -23,6 +24,7 @@ const App: React.FC = () => {
   const [network, setNetwork] = useState<detect.NetworkInfo | null>(null);
   const [webrtc, setWebrtc] = useState<detect.WebRTCInfo | null>(null);
   const [protocol, setProtocol] = useState<detect.NetworkProtocolInfo | null>(null);
+  const [extensions, setExtensions] = useState<detect.ExtensionConflictInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
   const [generatorEmail, setGeneratorEmail] = useState('');
@@ -30,7 +32,7 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'generator', 'kb']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'generator', 'kb']);
 
   const now = useMemo(() => new Date(), []);
 
@@ -38,6 +40,7 @@ const App: React.FC = () => {
     detect.getNetworkInfo().then(setNetwork);
     detect.getWebRTCInfo().then(setWebrtc);
     setProtocol(detect.getNetworkProtocolInfo());
+    setExtensions(detect.detectExtensionConflicts());
   }, []);
 
   useEffect(() => {
@@ -459,6 +462,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('extensions') && (
+              <Card title="Browser Extension Conflicts" className="extensions">
+                <ExtensionConflicts info={extensions} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('kb') && (
               <Card title="Knowledge Base: Understanding your data" className="kb">
                 <KnowledgeBase />
@@ -512,6 +521,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('gpu')} onChange={() => toggleExtension('gpu')} /> GPU Audit
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('extensions')} onChange={() => toggleExtension('extensions')} /> Extension Audit
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('kb')} onChange={() => toggleExtension('kb')} /> Knowledge Base
