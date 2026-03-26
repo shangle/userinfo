@@ -44,7 +44,7 @@
 - [x] **Memory & Threading Diagnostics:** Checks available JS heap memory and verifies Web Worker/SharedArrayBuffer support for high-performance tasks.
 - [x] **SSL/TLS Deep Dive:** Reports the encryption protocol (e.g., TLS 1.3) and cipher suite used for the current session.
 - [x] **Media Capabilities & DRM Check:** Checks for Widevine/PlayReady support and HDCP status, essential for troubleshooting video streaming.
-- [ ] **Font Availability & Rendering:** Detects if critical system fonts are present and how they are being rendered.
+- [x] **Font Availability & Rendering:** Detects if critical system fonts are present and how they are being rendered.
 - [ ] **Peripheral & Input Scan:** Reports connected gamepads, MIDI devices, or specialized input hardware that might interfere with web apps.
 - [ ] **Client-Side Security Header Check:** Detects if `cross-origin-isolated` is active and audits other client-side security flags.
 - [ ] **Battery Stress & Power Mode:** Identifies if the device is in "Power Saving" mode which may throttle JavaScript performance.
