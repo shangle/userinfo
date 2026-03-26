@@ -39,7 +39,8 @@
 - [x] **WebRTC Connectivity & Leak Test:** Diagnoses real-time communication issues and identifies potential local/public IP leaks.
 - [x] **GPU & Hardware Acceleration Audit:** Provides detailed GPU renderer information and identifies if hardware acceleration is enabled.
 - [x] **Network Protocol & HTTP/3 Check:** Detects if the network supports modern protocols like QUIC/HTTP3 for faster, more secure connections.
-- [ ] **Extension Conflict Detection:** Identifies if third-party browser extensions are injecting styles or scripts that could cause application errors.
+- [x] **Extension Conflict Detection:** Identifies if third-party browser extensions are injecting styles or scripts that could cause application errors.
+
 - [ ] **Memory & Threading Diagnostics:** Checks available JS heap memory and verifies Web Worker/SharedArrayBuffer support for high-performance tasks.
 - [ ] **SSL/TLS Deep Dive:** Reports the encryption protocol (e.g., TLS 1.3) and cipher suite used for the current session.
 - [ ] **Media Capabilities & DRM Check:** Checks for Widevine/PlayReady support and HDCP status, essential for troubleshooting video streaming.
