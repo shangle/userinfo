@@ -4,8 +4,10 @@ import Card from './components/Card';
 import Hero from './components/Hero';
 import Summary from './components/Summary';
 import CommonProblems from './components/CommonProblems';
+import Marketing from './components/Marketing';
 
 const App: React.FC = () => {
+  const [isLanding, setIsLanding] = useState(true);
   const [browser] = useState(detect.getBrowserInfo());
   const [os] = useState(detect.getOSInfo());
   const [deviceType] = useState(detect.getDeviceType());
@@ -30,6 +32,11 @@ const App: React.FC = () => {
     const email = params.get('email') || '';
     const subject = params.get('subject');
     const ext = params.get('ext');
+    const mode = params.get('mode');
+
+    if (email || subject || ext || mode === 'tool') {
+      setIsLanding(false);
+    }
 
     if (email) {
       setSupportEmail(email);
@@ -279,153 +286,164 @@ const App: React.FC = () => {
 
   return (
     <main className="wrap">
-      <Hero browser={browser} os={os} deviceType={deviceType} />
-
-      <section className="grid" aria-label="Support details and tools">
-        <Card title="The most important information" className="summary">
-          <Summary 
-            browser={browser} 
-            os={os} 
-            deviceType={deviceType} 
-            ip={network?.ip || ''} 
-            outdatedWarning={outdatedWarning}
-          />
-        </Card>
-
-        <Card title="Send or copy your details" className="actions">
-          <div className="action-layout">
-            <div className="field-group">
-              <label className="field-label" htmlFor="supportEmailInput">Support email address</label>
-              <input 
-                className="field-input" 
-                id="supportEmailInput" 
-                type="email" 
-                placeholder="Type a support email address" 
-                value={supportEmail}
-                onChange={(e) => setSupportEmail(e.target.value)}
-                aria-describedby="supportEmailNote"
-              />
-              <div className="small-note" id="supportEmailNote">If the page link already includes an email address, it will appear here automatically.</div>
-            </div>
-            <div className="button-row">
-              <button className="btn btn-primary btn-big" onClick={handleEmailSupport}>Open email</button>
-              <button className="btn btn-neutral btn-big" onClick={handleCopyInfo}>Copy details</button>
-            </div>
+      {isLanding ? (
+        <Marketing onStart={() => setIsLanding(false)} />
+      ) : (
+        <>
+          <div style={{ marginBottom: '16px' }}>
+            <button className="btn btn-neutral" onClick={() => setIsLanding(true)}>
+              ← Back to Overview
+            </button>
           </div>
-          <div className="small-note" role="status">{actionStatus}</div>
-        </Card>
+          <Hero browser={browser} os={os} deviceType={deviceType} />
 
-        {enabledExtensions.includes('help') && (
-          <Card title="Help with common browser problems" className="help">
-            <div className="help-head">
-              <div>
-                <div className="small-note">
-                  {showAllHelp ? 'Showing all help topics.' : `Showing topics that best match ${browser.name} on ${os}.`}
+          <section className="grid" aria-label="Support details and tools">
+            <Card title="The most important information" className="summary">
+              <Summary 
+                browser={browser} 
+                os={os} 
+                deviceType={deviceType} 
+                ip={network?.ip || ''} 
+                outdatedWarning={outdatedWarning}
+              />
+            </Card>
+
+            <Card title="Send or copy your details" className="actions">
+              <div className="action-layout">
+                <div className="field-group">
+                  <label className="field-label" htmlFor="supportEmailInput">Support email address</label>
+                  <input 
+                    className="field-input" 
+                    id="supportEmailInput" 
+                    type="email" 
+                    placeholder="Type a support email address" 
+                    value={supportEmail}
+                    onChange={(e) => setSupportEmail(e.target.value)}
+                    aria-describedby="supportEmailNote"
+                  />
+                  <div className="small-note" id="supportEmailNote">If the page link already includes an email address, it will appear here automatically.</div>
+                </div>
+                <div className="button-row">
+                  <button className="btn btn-primary btn-big" onClick={handleEmailSupport}>Open email</button>
+                  <button className="btn btn-neutral btn-big" onClick={handleCopyInfo}>Copy details</button>
                 </div>
               </div>
-              <button className="btn btn-secondary" onClick={() => setShowAllHelp(!showAllHelp)} aria-pressed={showAllHelp}>
-                {showAllHelp ? 'Show only relevant help' : 'Show all help topics'}
-              </button>
-            </div>
+              <div className="small-note" role="status">{actionStatus}</div>
+            </Card>
 
-            <div className="guide-box">
-              <h3>Friendly troubleshooting guide</h3>
-              <div className="small-note">If you are not sure where to start, go in this order and do just one thing at a time.</div>
-              <div className="guide-steps">
-                <div className="guide-step"><span className="step-number" aria-hidden="true">1</span><strong>Read the top script to support.</strong><br />Tell them your browser, operating system, and device type exactly as shown.</div>
-                <div className="guide-step"><span className="step-number" aria-hidden="true">2</span><strong>Check whether you are online.</strong><br />If the page says you are offline, reconnect to the internet before trying again.</div>
-                <div className="guide-step"><span className="step-number" aria-hidden="true">3</span><strong>Close and reopen the browser.</strong><br />Then return to the banking site and try again.</div>
-              </div>
-            </div>
-
-            {helpTopics.filter(matchesFilter).map((topic, i) => (
-              <details key={i} className="help-topic">
-                <summary>{topic.title}</summary>
-                <ol className="steps">
-                  {topic.steps.map((step, j) => <li key={j}>{step}</li>)}
-                </ol>
-              </details>
-            ))}
-          </Card>
-        )}
-
-        {enabledExtensions.includes('common') && (
-          <Card title="Privacy, VPN, and Tor" className="common-problems">
-            <CommonProblems />
-          </Card>
-        )}
-
-        {enabledExtensions.includes('tech') && (
-          <Card title="Technical details for support" className="tech">
-            <p className="mini-note">If support needs more detail, open the section below.</p>
-            <details>
-              <summary>Show technical details and debugging information</summary>
-              <div className="tech-grid">
-                {techPairs.map(([label, value], i) => (
-                  <div key={i} className="tech-item">
-                    <div className="label">{label}</div>
-                    <div className="value">{value}</div>
+            {enabledExtensions.includes('help') && (
+              <Card title="Help with common browser problems" className="help">
+                <div className="help-head">
+                  <div>
+                    <div className="small-note">
+                      {showAllHelp ? 'Showing all help topics.' : `Showing topics that best match ${browser.name} on ${os}.`}
+                    </div>
                   </div>
+                  <button className="btn btn-secondary" onClick={() => setShowAllHelp(!showAllHelp)} aria-pressed={showAllHelp}>
+                    {showAllHelp ? 'Show only relevant help' : 'Show all help topics'}
+                  </button>
+                </div>
+
+                <div className="guide-box">
+                  <h3>Friendly troubleshooting guide</h3>
+                  <div className="small-note">If you are not sure where to start, go in this order and do just one thing at a time.</div>
+                  <div className="guide-steps">
+                    <div className="guide-step"><span className="step-number" aria-hidden="true">1</span><strong>Read the top script to support.</strong><br />Tell them your browser, operating system, and device type exactly as shown.</div>
+                    <div className="guide-step"><span className="step-number" aria-hidden="true">2</span><strong>Check whether you are online.</strong><br />If the page says you are offline, reconnect to the internet before trying again.</div>
+                    <div className="guide-step"><span className="step-number" aria-hidden="true">3</span><strong>Close and reopen the browser.</strong><br />Then return to the banking site and try again.</div>
+                  </div>
+                </div>
+
+                {helpTopics.filter(matchesFilter).map((topic, i) => (
+                  <details key={i} className="help-topic">
+                    <summary>{topic.title}</summary>
+                    <ol className="steps">
+                      {topic.steps.map((step, j) => <li key={j}>{step}</li>)}
+                    </ol>
+                  </details>
                 ))}
-              </div>
-            </details>
-          </Card>
-        )}
+              </Card>
+            )}
 
-        {enabledExtensions.includes('generator') && (
-          <Card title="Create a support link" className="generator">
-            <p className="mini-note">Support staff can build a link with an email address, subject, and active extensions.</p>
-            <div className="action-layout">
-              <div className="field-group">
-                <label className="field-label" htmlFor="generatorEmail">Support email address</label>
-                <input 
-                  className="field-input" 
-                  id="generatorEmail" 
-                  type="email" 
-                  placeholder="support@example.com" 
-                  value={generatorEmail}
-                  onChange={(e) => setGeneratorEmail(e.target.value)}
-                />
-              </div>
-              <div className="field-group">
-                <label className="field-label" htmlFor="generatorSubject">Email subject</label>
-                <input 
-                  className="field-input" 
-                  id="generatorSubject" 
-                  type="text" 
-                  value={generatorSubject}
-                  onChange={(e) => setGeneratorSubject(e.target.value)}
-                />
-              </div>
-            </div>
+            {enabledExtensions.includes('common') && (
+              <Card title="Privacy, VPN, and Tor" className="common-problems">
+                <CommonProblems />
+              </Card>
+            )}
 
-            <fieldset className="extension-toggles">
-              <legend className="small-note" style={{marginBottom: '8px', border: 'none', padding: 0}}>Active Modules (Extensions)</legend>
-              <div className="toggle-list">
-                <label className="toggle-item">
-                  <input type="checkbox" checked={enabledExtensions.includes('help')} onChange={() => toggleExtension('help')} /> Help Guide
-                </label>
-                <label className="toggle-item">
-                  <input type="checkbox" checked={enabledExtensions.includes('common')} onChange={() => toggleExtension('common')} /> Privacy/VPN
-                </label>
-                <label className="toggle-item">
-                  <input type="checkbox" checked={enabledExtensions.includes('tech')} onChange={() => toggleExtension('tech')} /> Tech Details
-                </label>
-                <label className="toggle-item">
-                  <input type="checkbox" checked={enabledExtensions.includes('generator')} onChange={() => toggleExtension('generator')} /> Link Generator
-                </label>
-              </div>
-            </fieldset>
+            {enabledExtensions.includes('tech') && (
+              <Card title="Technical details for support" className="tech">
+                <p className="mini-note">If support needs more detail, open the section below.</p>
+                <details>
+                  <summary>Show technical details and debugging information</summary>
+                  <div className="tech-grid">
+                    {techPairs.map(([label, value], i) => (
+                      <div key={i} className="tech-item">
+                        <div className="label">{label}</div>
+                        <div className="value">{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              </Card>
+            )}
 
-            <div className="button-row" style={{marginTop:'18px'}}>
-              <button className="btn btn-primary" onClick={handleGenerateLink}>Generate link</button>
-              <button className="btn btn-neutral" onClick={handleCopyLink}>Copy link</button>
-            </div>
-            {generatedLink && <div className="generated-link" role="log">{generatedLink}</div>}
-            <div className="small-note" role="status">{generatorStatus}</div>
-          </Card>
-        )}
-      </section>
+            {enabledExtensions.includes('generator') && (
+              <Card title="Create a support link" className="generator">
+                <p className="mini-note">Support staff can build a link with an email address, subject, and active extensions.</p>
+                <div className="action-layout">
+                  <div className="field-group">
+                    <label className="field-label" htmlFor="generatorEmail">Support email address</label>
+                    <input 
+                      className="field-input" 
+                      id="generatorEmail" 
+                      type="email" 
+                      placeholder="support@example.com" 
+                      value={generatorEmail}
+                      onChange={(e) => setGeneratorEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="field-group">
+                    <label className="field-label" htmlFor="generatorSubject">Email subject</label>
+                    <input 
+                      className="field-input" 
+                      id="generatorSubject" 
+                      type="text" 
+                      value={generatorSubject}
+                      onChange={(e) => setGeneratorSubject(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <fieldset className="extension-toggles">
+                  <legend className="small-note" style={{marginBottom: '8px', border: 'none', padding: 0}}>Active Modules (Extensions)</legend>
+                  <div className="toggle-list">
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('help')} onChange={() => toggleExtension('help')} /> Help Guide
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('common')} onChange={() => toggleExtension('common')} /> Privacy/VPN
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('tech')} onChange={() => toggleExtension('tech')} /> Tech Details
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('generator')} onChange={() => toggleExtension('generator')} /> Link Generator
+                    </label>
+                  </div>
+                </fieldset>
+
+                <div className="button-row" style={{marginTop:'18px'}}>
+                  <button className="btn btn-primary" onClick={handleGenerateLink}>Generate link</button>
+                  <button className="btn btn-neutral" onClick={handleCopyLink}>Copy link</button>
+                </div>
+                {generatedLink && <div className="generated-link" role="log">{generatedLink}</div>}
+                <div className="small-note" role="status">{generatorStatus}</div>
+              </Card>
+            )}
+          </section>
+        </>
+      )}
 
       <footer className="footer">Powered by UserInfo.</footer>
     </main>
