@@ -8,6 +8,8 @@ import Marketing from './components/Marketing';
 import Tutorial from './components/Tutorial';
 import KnowledgeBase from './components/KnowledgeBase';
 import SalesDeck from './components/SalesDeck';
+import WebRTCLeaks from './components/WebRTCLeaks';
+import GPUAudit from './components/GPUAudit';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -16,7 +18,9 @@ const App: React.FC = () => {
   const [browser] = useState(detect.getBrowserInfo());
   const [os] = useState(detect.getOSInfo());
   const [deviceType] = useState(detect.getDeviceType());
+  const [gpu] = useState(detect.getGPUInfo());
   const [network, setNetwork] = useState<detect.NetworkInfo | null>(null);
+  const [webrtc, setWebrtc] = useState<detect.WebRTCInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
   const [generatorEmail, setGeneratorEmail] = useState('');
@@ -24,12 +28,13 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'generator', 'kb']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'generator', 'kb']);
 
   const now = useMemo(() => new Date(), []);
 
   useEffect(() => {
     detect.getNetworkInfo().then(setNetwork);
+    detect.getWebRTCInfo().then(setWebrtc);
   }, []);
 
   useEffect(() => {
@@ -100,6 +105,16 @@ const App: React.FC = () => {
       basePairs.push(['ISP', network.isp]);
       basePairs.push(['Location', `${network.city}, ${network.region}, ${network.country}`]);
     }
+
+    if (webrtc) {
+      basePairs.push(['WebRTC STUN Status', webrtc.stunStatus]);
+      if (webrtc.localIps.length > 0) basePairs.push(['WebRTC Local IPs', webrtc.localIps.join(', ')]);
+      if (webrtc.publicIps.length > 0) basePairs.push(['WebRTC Public IPs', webrtc.publicIps.join(', ')]);
+    }
+
+    basePairs.push(['GPU Vendor', gpu.vendor]);
+    basePairs.push(['GPU Renderer', gpu.renderer]);
+    basePairs.push(['Hardware Acceleration', gpu.isHardwareAccelerated ? 'Enabled' : 'Disabled (or not detected)']);
 
     return [
       ...basePairs,
@@ -417,6 +432,18 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('webrtc') && (
+              <Card title="WebRTC Connectivity & IP Leaks" className="webrtc">
+                <WebRTCLeaks info={webrtc} />
+              </Card>
+            )}
+
+            {enabledExtensions.includes('gpu') && (
+              <Card title="GPU & Hardware Acceleration Audit" className="gpu">
+                <GPUAudit info={gpu} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('kb') && (
               <Card title="Knowledge Base: Understanding your data" className="kb">
                 <KnowledgeBase />
@@ -461,6 +488,12 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('tech')} onChange={() => toggleExtension('tech')} /> Tech Details
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('webrtc')} onChange={() => toggleExtension('webrtc')} /> WebRTC Leak Test
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('gpu')} onChange={() => toggleExtension('gpu')} /> GPU Audit
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('kb')} onChange={() => toggleExtension('kb')} /> Knowledge Base

@@ -49,6 +49,10 @@ const KnowledgeBase: React.FC = () => {
     {
       title: 'Color Scheme & Reduced Motion',
       description: 'Preferences set in your operating system. "Dark Mode" or "Reduce Motion" settings can change how a website looks or behaves. Support checks these if you report that a site looks unusual or has distracting animations.'
+    },
+    {
+      title: 'GPU & Hardware Acceleration',
+      description: 'The GPU (Graphics Processing Unit) is the hardware that handles rendering images, animations, and videos on your screen. Hardware Acceleration is a setting that allows your browser to use your device\'s GPU for these tasks, resulting in a smoother experience. If this is disabled or using "software rendering," websites may feel slow or "choppy."'
     }
   ];
 

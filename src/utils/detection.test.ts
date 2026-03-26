@@ -14,7 +14,9 @@ import {
   parseMajorVersion,
   getOutdatedWarning,
   isValidEmail,
-  getNetworkInfo
+  getNetworkInfo,
+  getWebRTCInfo,
+  getGPUInfo
 } from './detection';
 
 describe('detection utils', () => {
@@ -28,8 +30,11 @@ describe('detection utils', () => {
       doNotTrack: null,
       maxTouchPoints: 0,
     });
-    vi.stubGlobal('window', {
-      matchMedia: vi.fn().mockReturnValue({ matches: false }),
+    // Do not overwrite window completely
+    (window as any).matchMedia = vi.fn().mockReturnValue({ 
+      matches: false,
+      addListener: vi.fn(),
+      removeListener: vi.fn()
     });
     vi.stubGlobal('localStorage', {
       setItem: vi.fn(),
@@ -197,6 +202,7 @@ describe('detection utils', () => {
 
     it('returns No otherwise', () => {
       vi.stubGlobal('navigator', { maxTouchPoints: 0 });
+      if ('ontouchstart' in window) delete (window as any).ontouchstart;
       expect(touchSupport()).toBe('No');
     });
   });
@@ -347,6 +353,82 @@ describe('detection utils', () => {
       
       const info = await getNetworkInfo();
       expect(info.ip).toContain('Unknown');
+    });
+  });
+
+  describe('getWebRTCInfo', () => {
+    it('returns supported false if RTCPeerConnection is missing', async () => {
+      vi.stubGlobal('window', {});
+      const info = await getWebRTCInfo();
+      expect(info.supported).toBe(false);
+    });
+  });
+
+  describe('getGPUInfo', () => {
+    it('returns information when WebGL is available', () => {
+      const mockGetExtension = vi.fn().mockReturnValue({
+        UNMASKED_VENDOR_WEBGL: 0x9245,
+        UNMASKED_RENDERER_WEBGL: 0x9246,
+      });
+      const mockGetParameter = vi.fn().mockImplementation((param) => {
+        if (param === 0x9245) return 'NVIDIA';
+        if (param === 0x9246) return 'GeForce RTX 3080';
+        return 'Unknown';
+      });
+
+      const mockContext = {
+        getExtension: mockGetExtension,
+        getParameter: mockGetParameter,
+      };
+
+      vi.stubGlobal('document', {
+        createElement: vi.fn().mockReturnValue({
+          getContext: vi.fn().mockReturnValue(mockContext),
+        }),
+      });
+
+      const info = getGPUInfo();
+      expect(info.vendor).toBe('NVIDIA');
+      expect(info.renderer).toBe('GeForce RTX 3080');
+      expect(info.isHardwareAccelerated).toBe(true);
+    });
+
+    it('detects software rendering', () => {
+      const mockGetExtension = vi.fn().mockReturnValue({
+        UNMASKED_VENDOR_WEBGL: 1,
+        UNMASKED_RENDERER_WEBGL: 2,
+      });
+      const mockGetParameter = vi.fn().mockImplementation((param) => {
+        if (param === 1) return 'Google';
+        if (param === 2) return 'Google SwiftShader';
+        return 'Unknown';
+      });
+
+      const mockContext = {
+        getExtension: mockGetExtension,
+        getParameter: mockGetParameter,
+      };
+
+      vi.stubGlobal('document', {
+        createElement: vi.fn().mockReturnValue({
+          getContext: vi.fn().mockReturnValue(mockContext),
+        }),
+      });
+
+      const info = getGPUInfo();
+      expect(info.isHardwareAccelerated).toBe(false);
+    });
+
+    it('handles WebGL unavailability', () => {
+      vi.stubGlobal('document', {
+        createElement: vi.fn().mockReturnValue({
+          getContext: vi.fn().mockReturnValue(null),
+        }),
+      });
+
+      const info = getGPUInfo();
+      expect(info.vendor).toBe('Not available');
+      expect(info.isHardwareAccelerated).toBe(false);
     });
   });
 });

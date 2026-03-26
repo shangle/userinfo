@@ -179,3 +179,116 @@ export const getOutdatedWarning = (browserName: string, majorVersion: number | n
 export const isValidEmail = (value: string): boolean => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 };
+
+export interface WebRTCInfo {
+  supported: boolean;
+  stunStatus: string;
+  localIps: string[];
+  publicIps: string[];
+}
+
+export interface GPUInfo {
+  vendor: string;
+  renderer: string;
+  isHardwareAccelerated: boolean;
+}
+
+export const getGPUInfo = (): GPUInfo => {
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl') as WebGLRenderingContext;
+    
+    if (!gl) {
+      return {
+        vendor: 'Not available',
+        renderer: 'Not available',
+        isHardwareAccelerated: false
+      };
+    }
+
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    const vendor = debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : (gl.getParameter(gl.VENDOR) || 'Unknown');
+    const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : (gl.getParameter(gl.RENDERER) || 'Unknown');
+    
+    // Software renderers typically contain these strings
+    const softwareKeywords = ['swiftshader', 'software', 'mesa', 'llvmpipe', 'gallium', 'google-rendering-engine'];
+    const lowerRenderer = renderer.toLowerCase();
+    const isSoftware = softwareKeywords.some(s => lowerRenderer.includes(s));
+    
+    return {
+      vendor,
+      renderer,
+      isHardwareAccelerated: !isSoftware
+    };
+  } catch (e) {
+    return {
+      vendor: 'Error detecting',
+      renderer: 'Error detecting',
+      isHardwareAccelerated: false
+    };
+  }
+};
+
+export const getWebRTCInfo = async (): Promise<WebRTCInfo> => {
+  const info: WebRTCInfo = {
+    supported: 'RTCPeerConnection' in window,
+    stunStatus: 'Not tested',
+    localIps: [],
+    publicIps: [],
+  };
+
+  if (!info.supported) return info;
+
+  try {
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
+
+    const ips = new Set<string>();
+    
+    pc.onicecandidate = (event) => {
+      if (!event.candidate) {
+        info.stunStatus = 'ICE Gathering Complete';
+        return;
+      }
+      
+      const parts = event.candidate.candidate.split(' ');
+      const ip = parts[4];
+      if (ip && !ips.has(ip)) {
+        ips.add(ip);
+        if (ip.includes('.local') || ip.match(/^(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)/)) {
+          info.localIps.push(ip);
+        } else {
+          info.publicIps.push(ip);
+        }
+      }
+    };
+
+    pc.createDataChannel('test');
+    await pc.createOffer().then(offer => pc.setLocalDescription(offer));
+    
+    info.stunStatus = 'Gathering...';
+
+    // Wait for gathering to complete or timeout
+    await new Promise<void>((resolve) => {
+      let timeout = setTimeout(() => {
+        if (info.stunStatus === 'Gathering...') info.stunStatus = 'Timed out';
+        resolve();
+      }, 5000);
+      
+      pc.onicegatheringstatechange = () => {
+        if (pc.iceGatheringState === 'complete') {
+          clearTimeout(timeout);
+          info.stunStatus = 'Success';
+          resolve();
+        }
+      };
+    });
+
+    pc.close();
+  } catch (error) {
+    info.stunStatus = 'Error: ' + (error instanceof Error ? error.message : String(error));
+  }
+
+  return info;
+};
