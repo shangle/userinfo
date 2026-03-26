@@ -17,6 +17,7 @@ import MediaCapabilities from './components/MediaCapabilities';
 import FontDetection from './components/FontDetection';
 import PeripheralScan from './components/PeripheralScan';
 import SecurityAudit from './components/SecurityAudit';
+import BatteryStatus from './components/BatteryStatus';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -36,6 +37,7 @@ const App: React.FC = () => {
   const [peripherals, setPeripherals] = useState<detect.PeripheralInfo | null>(null);
   const [extensions, setExtensions] = useState<detect.ExtensionConflictInfo | null>(null);
   const [security, setSecurity] = useState<detect.SecurityInfo | null>(null);
+  const [battery, setBattery] = useState<detect.BatteryInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
   const [generatorEmail, setGeneratorEmail] = useState('');
@@ -43,7 +45,7 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts', 'peripherals', 'security']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts', 'peripherals', 'security', 'battery']);
 
   const now = useMemo(() => new Date(), []);
 
@@ -57,6 +59,7 @@ const App: React.FC = () => {
     });
     detect.getMediaCapabilitiesInfo().then(setMedia);
     detect.getPeripheralInfo().then(setPeripherals);
+    detect.getBatteryInfo().then(setBattery);
     setFonts(detect.detectFonts());
     setExtensions(detect.detectExtensionConflicts());
     setSecurity(detect.getSecurityInfo());
@@ -186,6 +189,11 @@ const App: React.FC = () => {
       if (peripherals.midi.supported) {
         basePairs.push(['MIDI Inputs', String(peripherals.midi.inputs.length)]);
       }
+    }
+
+    if (battery) {
+      basePairs.push(['Battery Level', battery.level !== null ? Math.round(battery.level * 100) + '%' : 'N/A']);
+      basePairs.push(['Power Saving Mode', battery.powerSavingHint || 'Not detected']);
     }
 
     return [
@@ -558,6 +566,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('battery') && (
+              <Card title="Battery & Power Diagnostics" className="battery">
+                <BatteryStatus info={battery} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('kb') && (
               <Card title="Knowledge Base: Understanding your data" className="kb">
                 <KnowledgeBase />
@@ -629,6 +643,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('security')} onChange={() => toggleExtension('security')} /> Security Audit
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('battery')} onChange={() => toggleExtension('battery')} /> Battery & Power
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('kb')} onChange={() => toggleExtension('kb')} /> Knowledge Base

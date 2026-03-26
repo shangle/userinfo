@@ -713,3 +713,83 @@ export const getPeripheralInfo = async (): Promise<PeripheralInfo> => {
 
   return info;
 };
+
+export interface BatteryInfo {
+  supported: boolean;
+  charging: boolean | null;
+  level: number | null;
+  chargingTime: number | null;
+  dischargingTime: number | null;
+  isLowPowerMode: boolean | null;
+  powerSavingHint: string | null;
+}
+
+export const getBatteryInfo = async (): Promise<BatteryInfo> => {
+  const info: BatteryInfo = {
+    supported: 'getBattery' in navigator,
+    charging: null,
+    level: null,
+    chargingTime: null,
+    dischargingTime: null,
+    isLowPowerMode: null,
+    powerSavingHint: null,
+  };
+
+  if (!info.supported) return info;
+
+  try {
+    const battery = await (navigator as any).getBattery();
+    info.charging = battery.charging;
+    info.level = battery.level;
+    info.chargingTime = battery.chargingTime;
+    info.dischargingTime = battery.dischargingTime;
+    
+    // Heuristic for Low Power Mode:
+    // 1. If battery is not charging and level is low.
+    // 2. On Safari, Power Saving Mode throttles requestAnimationFrame to 30fps.
+    // 3. navigator.scheduling.isInputPending() (Chrome) might be throttled.
+    
+    // Detect if battery is low and not charging
+    const isLowBattery = !battery.charging && battery.level <= 0.2;
+    
+    // Check if FPS is throttled (approx 30fps) - this is a heuristic
+    const checkFPS = async (): Promise<boolean> => {
+      return new Promise((resolve) => {
+        let frames = 0;
+        let start = performance.now();
+        const check = (now: number) => {
+          frames++;
+          if (now - start < 100) {
+            requestAnimationFrame(check);
+          } else {
+            const fps = (frames * 1000) / (now - start);
+            // If FPS is significantly below 60 on a 60Hz+ screen, it might be throttled.
+            // On high refresh screens (120Hz), 30fps or 60fps might be power saving.
+            // We use 35 as a threshold for 30fps lock.
+            resolve(fps < 35);
+          }
+        };
+        requestAnimationFrame(check);
+      });
+    };
+
+    const fpsThrottled = await checkFPS();
+    
+    info.isLowPowerMode = isLowBattery || fpsThrottled;
+    
+    if (isLowBattery && fpsThrottled) {
+      info.powerSavingHint = 'High (Low battery and throttled performance)';
+    } else if (isLowBattery) {
+      info.powerSavingHint = 'Likely (Battery low, not charging)';
+    } else if (fpsThrottled) {
+      info.powerSavingHint = 'Possible (JavaScript performance throttled)';
+    } else {
+      info.powerSavingHint = 'Not detected';
+    }
+
+  } catch (e) {
+    console.error('Error getting battery info:', e);
+  }
+
+  return info;
+};

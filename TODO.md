@@ -47,5 +47,5 @@
 - [x] **Font Availability & Rendering:** Detects if critical system fonts are present and how they are being rendered.
 - [x] **Peripheral & Input Scan:** Reports connected gamepads, MIDI devices, or specialized input hardware that might interfere with web apps.
 - [x] **Client-Side Security Header Check:** Detects if `cross-origin-isolated` is active and audits other client-side security flags.
-- [ ] **Battery Stress & Power Mode:** Identifies if the device is in "Power Saving" mode which may throttle JavaScript performance.
+- [x] **Battery Stress & Power Mode:** Identifies if the device is in "Power Saving" mode which may throttle JavaScript performance.
 - [ ] **Automation & Bot Detection:** Checks for `navigator.webdriver` and other flags to see if the browser is being controlled by automation tools.
