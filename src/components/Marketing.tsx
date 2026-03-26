@@ -1,4 +1,5 @@
 import React from 'react';
+import CaseStudies from './CaseStudies';
 
 interface MarketingProps {
   onStart: () => void;
@@ -73,6 +74,8 @@ const Marketing: React.FC<MarketingProps> = ({ onStart }) => {
             <li><strong>✓ Hardware Info:</strong> Screen resolution, pixel ratio, and device memory.</li>
           </ul>
         </div>
+
+        <CaseStudies />
 
         <div className="card" style={{ gridColumn: 'span 12' }}>
           <h3>Training & Resources</h3>
