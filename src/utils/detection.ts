@@ -66,25 +66,28 @@ export const getOSInfo = (): string => {
   const ua = navigator.userAgent || '';
   const platform = navigator.platform || '';
 
-  if (/Windows NT 10\.0/.test(ua)) return 'Windows 10 or 11';
-  if (/Windows NT 6\.3/.test(ua)) return 'Windows 8.1';
-  if (/Windows NT 6\.2/.test(ua)) return 'Windows 8';
-  if (/Windows NT 6\.1/.test(ua)) return 'Windows 7';
-  if (/Windows/i.test(ua)) return 'Windows';
-  if (/Mac OS X 10[_.]15/.test(ua)) return 'macOS Catalina';
-  if (/Mac OS X 11[_.]/.test(ua)) return 'macOS Big Sur';
-  if (/Mac OS X 12[_.]/.test(ua)) return 'macOS Monterey';
-  if (/Mac OS X 13[_.]/.test(ua)) return 'macOS Ventura';
-  if (/Mac OS X 14[_.]/.test(ua)) return 'macOS Sonoma';
-  if (/Mac OS X/.test(ua) || /Mac/.test(platform)) return 'macOS';
   if (/Android\s([\d\.]+)/.test(ua)) {
     const m = ua.match(/Android\s([\d\.]+)/);
     return 'Android ' + (m ? m[1] : '');
   }
   if (/iPhone/.test(ua)) return 'iPhone (iOS)';
   if (/iPad/.test(ua)) return 'iPad (iPadOS)';
-  if (/Linux/.test(ua)) return 'Linux';
   if (/CrOS/.test(ua)) return 'Chrome OS';
+
+  if (/Windows NT 10\.0/.test(ua)) return 'Windows 10 or 11';
+  if (/Windows NT 6\.3/.test(ua)) return 'Windows 8.1';
+  if (/Windows NT 6\.2/.test(ua)) return 'Windows 8';
+  if (/Windows NT 6\.1/.test(ua)) return 'Windows 7';
+  if (/Windows/i.test(ua)) return 'Windows';
+
+  if (/Mac OS X 10[_.]15/.test(ua)) return 'macOS Catalina';
+  if (/Mac OS X 11[_.]/.test(ua)) return 'macOS Big Sur';
+  if (/Mac OS X 12[_.]/.test(ua)) return 'macOS Monterey';
+  if (/Mac OS X 13[_.]/.test(ua)) return 'macOS Ventura';
+  if (/Mac OS X 14[_.]/.test(ua)) return 'macOS Sonoma';
+  if (/Mac OS X/.test(ua) || /Mac/.test(platform)) return 'macOS';
+
+  if (/Linux/.test(ua)) return 'Linux';
   return 'Unknown Operating System';
 };
 

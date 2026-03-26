@@ -1,12 +1,25 @@
 # UserInfo Project Roadmap
 
-## Core Updates (Next up)
+## Technical Tasks (Priority)
+- [ ] Add unit tests for detection logic.
+- [ ] Add CI/CD for automatic GitHub Pages deployment.
+
+## Core Updates
 - [x] Remove "Created by ChoiceOne" branding.
 - [x] Add IP Address, ISP, and Geolocation info.
+- [x] Major README overhaul (pitching as a secure support tool).
+- [x] Componentize the UI (Hero, Card, etc.).
 - [ ] **Add "Common Problems" section** (Cookies, VPN, Tor).
 - [ ] Implement "Extension Toggle" system (via Query Params & Link Generator).
-- [x] Major README overhaul (pitching as a secure support tool).
 - [ ] UI Review & Polishing (Responsive grid, accessible labels).
+
+## Product Ecosystem & Marketing Suite
+- [ ] **Marketing Landing Page:** Professional product pitch with features/benefits.
+- [ ] **Interactive Tutorials:** Walkthroughs for support staff on how to use UserInfo.
+- [ ] **Knowledge Base:** Detailed explanations of what each diagnostic flag means.
+- [ ] **Training Materials:** PDF/Video scripts for onboarding new support teams.
+- [ ] **Case Studies:** Real-world examples of how UserInfo reduces support time.
+- [ ] **Sales Deck:** Presentation materials for selling UserInfo to enterprise clients.
 
 ## Extension Ideas (Future Growth)
 1. **Network Performance:** Ping, Download speed, latency check.
@@ -21,8 +34,3 @@
 10. **Device Hardware:** Battery status (if available), CPU architecture.
 11. **Social Sharing Context:** How the link appears in chat/social apps.
 12. **Print-Friendly View:** A "Generate PDF" option for users to save their results.
-
-## Technical Tasks
-- [ ] Componentize the UI (Hero, Card, HelpSection, etc.).
-- [ ] Add unit tests for detection logic.
-- [ ] Add CI/CD for automatic GitHub Pages deployment.
