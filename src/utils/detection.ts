@@ -724,6 +724,45 @@ export interface BatteryInfo {
   powerSavingHint: string | null;
 }
 
+export interface BotDetectionInfo {
+  webdriver: boolean;
+  selenium: boolean;
+  phantomJS: boolean;
+  nightmare: boolean;
+  buffer: boolean;
+  emit: boolean;
+  spawn: boolean;
+  webdriverEvaluate: boolean;
+  webdriverScriptFn: boolean;
+  webdriverReturnValue: boolean;
+  isBot: boolean;
+}
+
+export const getBotDetectionInfo = (): BotDetectionInfo => {
+  const win = window as any;
+  const nav = navigator as any;
+
+  const checks = {
+    webdriver: !!nav.webdriver,
+    selenium: !!win._phantom || !!win.callPhantom || !!win.__Selenium_IDE_Recorder || !!win.nm_check || !!win.nm_set,
+    phantomJS: !!win.callPhantom || !!win._phantom,
+    nightmare: !!win.__nightmare,
+    buffer: !!win.Buffer,
+    emit: !!win.emit,
+    spawn: !!win.spawn,
+    webdriverEvaluate: !!win.__webdriver_evaluate,
+    webdriverScriptFn: !!win.__webdriver_script_fn,
+    webdriverReturnValue: !!win.__webdriver_return_value,
+  };
+
+  const isBot = Object.values(checks).some(val => val === true);
+
+  return {
+    ...checks,
+    isBot
+  };
+};
+
 export const getBatteryInfo = async (): Promise<BatteryInfo> => {
   const info: BatteryInfo = {
     supported: 'getBattery' in navigator,

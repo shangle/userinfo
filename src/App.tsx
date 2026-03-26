@@ -18,6 +18,7 @@ import FontDetection from './components/FontDetection';
 import PeripheralScan from './components/PeripheralScan';
 import SecurityAudit from './components/SecurityAudit';
 import BatteryStatus from './components/BatteryStatus';
+import BotDetection from './components/BotDetection';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -38,6 +39,7 @@ const App: React.FC = () => {
   const [extensions, setExtensions] = useState<detect.ExtensionConflictInfo | null>(null);
   const [security, setSecurity] = useState<detect.SecurityInfo | null>(null);
   const [battery, setBattery] = useState<detect.BatteryInfo | null>(null);
+  const [botDetection, setBotDetection] = useState<detect.BotDetectionInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
   const [generatorEmail, setGeneratorEmail] = useState('');
@@ -45,7 +47,7 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts', 'peripherals', 'security', 'battery']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts', 'peripherals', 'security', 'battery', 'bot']);
 
   const now = useMemo(() => new Date(), []);
 
@@ -63,6 +65,7 @@ const App: React.FC = () => {
     setFonts(detect.detectFonts());
     setExtensions(detect.detectExtensionConflicts());
     setSecurity(detect.getSecurityInfo());
+    setBotDetection(detect.getBotDetectionInfo());
   }, []);
 
   useEffect(() => {
@@ -194,6 +197,10 @@ const App: React.FC = () => {
     if (battery) {
       basePairs.push(['Battery Level', battery.level !== null ? Math.round(battery.level * 100) + '%' : 'N/A']);
       basePairs.push(['Power Saving Mode', battery.powerSavingHint || 'Not detected']);
+    }
+
+    if (botDetection) {
+      basePairs.push(['Automation Detected', botDetection.isBot ? 'Yes' : 'No']);
     }
 
     return [
@@ -572,6 +579,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('bot') && (
+              <Card title="Automation & Bot Detection" className="bot">
+                <BotDetection info={botDetection} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('kb') && (
               <Card title="Knowledge Base: Understanding your data" className="kb">
                 <KnowledgeBase />
@@ -646,6 +659,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('battery')} onChange={() => toggleExtension('battery')} /> Battery & Power
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('bot')} onChange={() => toggleExtension('bot')} /> Bot Detection
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('kb')} onChange={() => toggleExtension('kb')} /> Knowledge Base
