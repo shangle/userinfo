@@ -205,6 +205,39 @@ export interface ExtensionConflictInfo {
   conflicts: string[];
 }
 
+export interface MemoryInfo {
+  jsHeapSizeLimit: number | null;
+  totalJSHeapSize: number | null;
+  usedJSHeapSize: number | null;
+  deviceMemory: number | null;
+}
+
+export interface ThreadingInfo {
+  webWorkersSupported: boolean;
+  sharedArrayBufferSupported: boolean;
+  crossOriginIsolated: boolean;
+  hardwareConcurrency: number;
+}
+
+export const getMemoryInfo = (): MemoryInfo => {
+  const mem = (performance as any).memory;
+  return {
+    jsHeapSizeLimit: mem ? mem.jsHeapSizeLimit : null,
+    totalJSHeapSize: mem ? mem.totalJSHeapSize : null,
+    usedJSHeapSize: mem ? mem.usedJSHeapSize : null,
+    deviceMemory: (navigator as any).deviceMemory || null,
+  };
+};
+
+export const getThreadingInfo = (): ThreadingInfo => {
+  return {
+    webWorkersSupported: typeof Worker !== 'undefined',
+    sharedArrayBufferSupported: typeof SharedArrayBuffer !== 'undefined',
+    crossOriginIsolated: (window as any).crossOriginIsolated || false,
+    hardwareConcurrency: navigator.hardwareConcurrency || 0,
+  };
+};
+
 export const detectExtensionConflicts = (): ExtensionConflictInfo => {
   const conflicts: string[] = [];
 

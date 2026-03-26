@@ -18,6 +18,8 @@ import {
   getWebRTCInfo,
   getGPUInfo,
   getNetworkProtocolInfo,
+  getMemoryInfo,
+  getThreadingInfo,
   detectExtensionConflicts
 } from './detection';
 
@@ -531,6 +533,58 @@ describe('detection utils', () => {
       const info = detectExtensionConflicts();
       expect(info.detected).toBe(false);
       expect(info.conflicts).toHaveLength(0);
+    });
+  });
+
+  describe('getMemoryInfo', () => {
+    it('returns memory information when performance.memory is available', () => {
+      const mockMemory = {
+        jsHeapSizeLimit: 2147483648,
+        totalJSHeapSize: 20480000,
+        usedJSHeapSize: 10240000,
+      };
+      vi.stubGlobal('performance', { memory: mockMemory });
+      vi.stubGlobal('navigator', { deviceMemory: 8 });
+
+      const info = getMemoryInfo();
+      expect(info.jsHeapSizeLimit).toBe(2147483648);
+      expect(info.deviceMemory).toBe(8);
+    });
+
+    it('handles missing memory information', () => {
+      vi.stubGlobal('performance', {});
+      vi.stubGlobal('navigator', {});
+
+      const info = getMemoryInfo();
+      expect(info.jsHeapSizeLimit).toBeNull();
+      expect(info.deviceMemory).toBeNull();
+    });
+  });
+
+  describe('getThreadingInfo', () => {
+    it('detects threading support', () => {
+      vi.stubGlobal('Worker', class {});
+      vi.stubGlobal('SharedArrayBuffer', class {});
+      vi.stubGlobal('window', { crossOriginIsolated: true });
+      vi.stubGlobal('navigator', { hardwareConcurrency: 8 });
+
+      const info = getThreadingInfo();
+      expect(info.webWorkersSupported).toBe(true);
+      expect(info.sharedArrayBufferSupported).toBe(true);
+      expect(info.crossOriginIsolated).toBe(true);
+      expect(info.hardwareConcurrency).toBe(8);
+    });
+
+    it('handles lack of threading support', () => {
+      vi.stubGlobal('Worker', undefined);
+      vi.stubGlobal('SharedArrayBuffer', undefined);
+      vi.stubGlobal('window', { crossOriginIsolated: false });
+      vi.stubGlobal('navigator', { hardwareConcurrency: 1 });
+
+      const info = getThreadingInfo();
+      expect(info.webWorkersSupported).toBe(false);
+      expect(info.sharedArrayBufferSupported).toBe(false);
+      expect(info.crossOriginIsolated).toBe(false);
     });
   });
 });

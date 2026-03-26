@@ -12,6 +12,7 @@ import WebRTCLeaks from './components/WebRTCLeaks';
 import GPUAudit from './components/GPUAudit';
 import NetworkProtocol from './components/NetworkProtocol';
 import ExtensionConflicts from './components/ExtensionConflicts';
+import MemoryDiagnostics from './components/MemoryDiagnostics';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -21,6 +22,8 @@ const App: React.FC = () => {
   const [os] = useState(detect.getOSInfo());
   const [deviceType] = useState(detect.getDeviceType());
   const [gpu] = useState(detect.getGPUInfo());
+  const [memory] = useState(detect.getMemoryInfo());
+  const [threading] = useState(detect.getThreadingInfo());
   const [network, setNetwork] = useState<detect.NetworkInfo | null>(null);
   const [webrtc, setWebrtc] = useState<detect.WebRTCInfo | null>(null);
   const [protocol, setProtocol] = useState<detect.NetworkProtocolInfo | null>(null);
@@ -32,7 +35,7 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'generator', 'kb']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb']);
 
   const now = useMemo(() => new Date(), []);
 
@@ -83,7 +86,7 @@ const App: React.FC = () => {
     const viewportSize = window.innerWidth + ' × ' + window.innerHeight;
     const pixelRatio = window.devicePixelRatio;
     const cores = navigator.hardwareConcurrency || 'Not reported';
-    const memory = (navigator as any).deviceMemory ? (navigator as any).deviceMemory + ' GB (reported)' : 'Not reported';
+    const deviceMemoryReported = (navigator as any).deviceMemory ? (navigator as any).deviceMemory + ' GB (reported)' : 'Not reported';
     const platform = navigator.platform || 'Not reported';
     const vendor = navigator.vendor || 'Not reported';
     const maxTouchPoints = navigator.maxTouchPoints || 'Not reported';
@@ -122,6 +125,17 @@ const App: React.FC = () => {
     basePairs.push(['GPU Renderer', gpu.renderer]);
     basePairs.push(['Hardware Acceleration', gpu.isHardwareAccelerated ? 'Enabled' : 'Disabled (or not detected)']);
 
+    if (memory) {
+      basePairs.push(['JS Heap Limit', memory.jsHeapSizeLimit ? Math.round(memory.jsHeapSizeLimit / 1048576) + ' MB' : 'N/A']);
+      basePairs.push(['JS Heap Used', memory.usedJSHeapSize ? Math.round(memory.usedJSHeapSize / 1048576) + ' MB' : 'N/A']);
+    }
+
+    if (threading) {
+      basePairs.push(['Web Workers', threading.webWorkersSupported ? 'Yes' : 'No']);
+      basePairs.push(['SharedArrayBuffer', threading.sharedArrayBufferSupported ? 'Yes' : 'No']);
+      basePairs.push(['Cross-Origin Isolated', threading.crossOriginIsolated ? 'Yes' : 'No']);
+    }
+
     if (protocol) {
       basePairs.push(['Network Protocol', protocol.protocol]);
       basePairs.push(['HTTP/3 Support', protocol.h3Support]);
@@ -149,7 +163,7 @@ const App: React.FC = () => {
       ['Pixel ratio', String(pixelRatio)],
       ['Color depth', window.screen && window.screen.colorDepth ? String(window.screen.colorDepth) : 'Not available'],
       ['Reported CPU cores', String(cores)],
-      ['Reported device memory', memory],
+      ['Reported device memory', deviceMemoryReported],
       ['Java enabled', javaEnabled],
       ['History length', String(historyLength)],
       ['Color scheme preference', colorScheme],
@@ -468,6 +482,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('memory') && (
+              <Card title="Memory & Threading Diagnostics" className="memory">
+                <MemoryDiagnostics memory={memory} threading={threading} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('kb') && (
               <Card title="Knowledge Base: Understanding your data" className="kb">
                 <KnowledgeBase />
@@ -524,6 +544,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('extensions')} onChange={() => toggleExtension('extensions')} /> Extension Audit
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('memory')} onChange={() => toggleExtension('memory')} /> Memory & Threading
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('kb')} onChange={() => toggleExtension('kb')} /> Knowledge Base

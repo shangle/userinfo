@@ -52,7 +52,11 @@ const KnowledgeBase: React.FC = () => {
     },
     {
       title: 'GPU & Hardware Acceleration',
-      description: 'The GPU (Graphics Processing Unit) is the hardware that handles rendering images, animations, and videos on your screen. Hardware Acceleration is a setting that allows your browser to use your device\'s GPU for these tasks, resulting in a smoother experience. If this is disabled or using "software rendering," websites may feel slow or "choppy."'
+      description: 'The GPU (Graphics Processing Unit) is the hardware that handles rendering images, animations, and videos on your screen. Hardware Acceleration is a setting that allows your browser to use your device\'s GPU for these tasks, resulting in a warmer, smoother experience. If this is disabled or using "software rendering," websites may feel slow or "choppy."'
+    },
+    {
+      title: 'Memory & Threading',
+      description: 'Checks for available JS heap memory and verifies if your browser supports Web Workers and SharedArrayBuffer. These features are essential for high-performance web applications that need to process large amounts of data without slowing down your computer.'
     }
   ];
 
