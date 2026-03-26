@@ -3,6 +3,7 @@ import * as detect from './utils/detection';
 import Card from './components/Card';
 import Hero from './components/Hero';
 import Summary from './components/Summary';
+import CommonProblems from './components/CommonProblems';
 
 const App: React.FC = () => {
   const [browser] = useState(detect.getBrowserInfo());
@@ -316,6 +317,10 @@ const App: React.FC = () => {
               </ol>
             </details>
           ))}
+        </Card>
+
+        <Card title="Privacy, VPN, and Tor" className="common-problems">
+          <CommonProblems />
         </Card>
 
         <Card title="Technical details for support" className="tech">

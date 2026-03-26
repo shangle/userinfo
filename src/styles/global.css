@@ -124,7 +124,7 @@
       padding: 20px;
     }
 
-    .summary, .actions, .help, .tech, .generator { grid-column: span 12; }
+    .summary, .actions, .help, .common-problems, .tech, .generator { grid-column: span 12; }
     .key, .plain { grid-column: span 12; }
 
     @media (min-width: 900px) {
