@@ -1,7 +1,7 @@
 # UserInfo Project Roadmap
 
 ## Technical Tasks (Priority)
-- [ ] Add unit tests for detection logic.
+- [x] Add unit tests for detection logic.
 - [ ] Add CI/CD for automatic GitHub Pages deployment.
 
 ## Core Updates
