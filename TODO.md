@@ -48,4 +48,4 @@
 - [x] **Peripheral & Input Scan:** Reports connected gamepads, MIDI devices, or specialized input hardware that might interfere with web apps.
 - [x] **Client-Side Security Header Check:** Detects if `cross-origin-isolated` is active and audits other client-side security flags.
 - [x] **Battery Stress & Power Mode:** Identifies if the device is in "Power Saving" mode which may throttle JavaScript performance.
-- [ ] **Automation & Bot Detection:** Checks for `navigator.webdriver` and other flags to see if the browser is being controlled by automation tools.
+- [x] **Automation & Bot Detection:** Checks for `navigator.webdriver` and other flags to see if the browser is being controlled by automation tools.
