@@ -387,6 +387,82 @@ export const getGPUInfo = (): GPUInfo => {
   }
 };
 
+export interface MediaCapabilitiesInfo {
+  widevine: boolean;
+  playready: boolean;
+  fairplay: boolean;
+  hdcpStatus: string;
+  decodingInfo: {
+    supported: boolean;
+    smooth: boolean;
+    powerEfficient: boolean;
+  };
+}
+
+export const getMediaCapabilitiesInfo = async (): Promise<MediaCapabilitiesInfo> => {
+  const checkDRM = async (keySystem: string): Promise<boolean> => {
+    try {
+      if (!navigator.requestMediaKeySystemAccess) return false;
+      const config = [{
+        initDataTypes: ['cenc'],
+        videoCapabilities: [{ contentType: 'video/mp4; codecs="avc1.42E01E"' }],
+        audioCapabilities: [{ contentType: 'audio/mp4; codecs="mp4a.40.2"' }]
+      }];
+      await navigator.requestMediaKeySystemAccess(keySystem, config);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const widevine = await checkDRM('com.widevine.alpha');
+  const playready = await checkDRM('com.microsoft.playready');
+  const fairplay = await checkDRM('com.apple.fps.1_0');
+
+  let hdcpStatus = 'Unknown';
+  if (widevine) {
+    try {
+      const config = [{
+        initDataTypes: ['cenc'],
+        videoCapabilities: [{ contentType: 'video/mp4; codecs="avc1.42E01E"' }],
+      }];
+      const access = await navigator.requestMediaKeySystemAccess('com.widevine.alpha', config);
+      const keys = await access.createMediaKeys();
+      if ((keys as any).getStatusForPolicy) {
+        const status = await (keys as any).getStatusForPolicy({ minHdcpVersion: '1.0' });
+        hdcpStatus = status;
+      } else {
+        hdcpStatus = 'Not supported by browser';
+      }
+    } catch (e) {
+      hdcpStatus = 'Error checking';
+    }
+  }
+
+  let decodingInfo = { supported: false, smooth: false, powerEfficient: false };
+  if ('mediaCapabilities' in navigator) {
+    try {
+      const result = await navigator.mediaCapabilities.decodingInfo({
+        type: 'media-source',
+        video: {
+          contentType: 'video/mp4; codecs="avc1.42E01E"',
+          width: 1920,
+          height: 1080,
+          bitrate: 5000000,
+          framerate: 60
+        }
+      });
+      decodingInfo = {
+        supported: result.supported,
+        smooth: result.smooth,
+        powerEfficient: result.powerEfficient
+      };
+    } catch (e) {}
+  }
+
+  return { widevine, playready, fairplay, hdcpStatus, decodingInfo };
+};
+
 export const getWebRTCInfo = async (): Promise<WebRTCInfo> => {
   const info: WebRTCInfo = {
     supported: 'RTCPeerConnection' in window,
