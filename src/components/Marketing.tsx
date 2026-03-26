@@ -78,10 +78,10 @@ const Marketing: React.FC<MarketingProps> = ({ onStart }) => {
           <h3>Training & Resources</h3>
           <p>Onboard your support team in minutes with our ready-to-use training materials.</p>
           <div className="button-row" style={{ marginTop: '12px' }}>
-            <a href="training/support-handbook.md" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+            <a href={`${import.meta.env.BASE_URL}training/support-handbook.md`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
               📄 Support Handbook (PDF Ready)
             </a>
-            <a href="training/video-script.md" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+            <a href={`${import.meta.env.BASE_URL}training/video-script.md`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
               🎬 Video Script (Onboarding)
             </a>
           </div>
