@@ -37,7 +37,7 @@
 
 ## Advanced Diagnostic & Security Extensions (Next Gen)
 - [x] **WebRTC Connectivity & Leak Test:** Diagnoses real-time communication issues and identifies potential local/public IP leaks.
-- [ ] **GPU & Hardware Acceleration Audit:** Provides detailed GPU renderer information and identifies if hardware acceleration is enabled.
+- [x] **GPU & Hardware Acceleration Audit:** Provides detailed GPU renderer information and identifies if hardware acceleration is enabled.
 - [ ] **Network Protocol & HTTP/3 Check:** Detects if the network supports modern protocols like QUIC/HTTP3 for faster, more secure connections.
 - [ ] **Extension Conflict Detection:** Identifies if third-party browser extensions are injecting styles or scripts that could cause application errors.
 - [ ] **Memory & Threading Diagnostics:** Checks available JS heap memory and verifies Web Worker/SharedArrayBuffer support for high-performance tasks.
