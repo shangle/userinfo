@@ -10,7 +10,7 @@
 - [x] Major README overhaul (pitching as a secure support tool).
 - [x] Componentize the UI (Hero, Card, etc.).
 - [x] **Add "Common Problems" section** (Cookies, VPN, Tor).
-- [ ] Implement "Extension Toggle" system (via Query Params & Link Generator).
+- [x] Implement "Extension Toggle" system (via Query Params & Link Generator).
 - [ ] UI Review & Polishing (Responsive grid, accessible labels).
 
 ## Product Ecosystem & Marketing Suite
