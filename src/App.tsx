@@ -6,6 +6,7 @@ import Summary from './components/Summary';
 import CommonProblems from './components/CommonProblems';
 import Marketing from './components/Marketing';
 import Tutorial from './components/Tutorial';
+import KnowledgeBase from './components/KnowledgeBase';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -21,7 +22,7 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'generator']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'generator', 'kb']);
 
   const now = useMemo(() => new Date(), []);
 
@@ -399,6 +400,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('kb') && (
+              <Card title="Knowledge Base: Understanding your data" className="kb">
+                <KnowledgeBase />
+              </Card>
+            )}
+
             {enabledExtensions.includes('generator') && (
               <Card title="Create a support link" className="generator">
                 <p className="mini-note">Support staff can build a link with an email address, subject, and active extensions.</p>
@@ -437,6 +444,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('tech')} onChange={() => toggleExtension('tech')} /> Tech Details
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('kb')} onChange={() => toggleExtension('kb')} /> Knowledge Base
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('generator')} onChange={() => toggleExtension('generator')} /> Link Generator
