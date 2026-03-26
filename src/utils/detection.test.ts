@@ -20,7 +20,8 @@ import {
   getNetworkProtocolInfo,
   getMemoryInfo,
   getThreadingInfo,
-  detectExtensionConflicts
+  detectExtensionConflicts,
+  getBatteryInfo
 } from './detection';
 
 describe('detection utils', () => {
@@ -585,6 +586,48 @@ describe('detection utils', () => {
       expect(info.webWorkersSupported).toBe(false);
       expect(info.sharedArrayBufferSupported).toBe(false);
       expect(info.crossOriginIsolated).toBe(false);
+    });
+  });
+
+  describe('getBatteryInfo', () => {
+    it('returns supported false if getBattery is missing', async () => {
+      vi.stubGlobal('navigator', {});
+      const info = await getBatteryInfo();
+      expect(info.supported).toBe(false);
+    });
+
+    it('returns battery information when available', async () => {
+      const mockBattery = {
+        charging: true,
+        level: 0.8,
+        chargingTime: 0,
+        dischargingTime: Infinity,
+      };
+      vi.stubGlobal('navigator', {
+        getBattery: vi.fn().mockResolvedValue(mockBattery),
+      });
+
+      const info = await getBatteryInfo();
+      expect(info.supported).toBe(true);
+      expect(info.charging).toBe(true);
+      expect(info.level).toBe(0.8);
+      expect(info.isLowPowerMode).toBe(false);
+    });
+
+    it('detects low power mode when battery is low and not charging', async () => {
+      const mockBattery = {
+        charging: false,
+        level: 0.15,
+        chargingTime: Infinity,
+        dischargingTime: 3600,
+      };
+      vi.stubGlobal('navigator', {
+        getBattery: vi.fn().mockResolvedValue(mockBattery),
+      });
+
+      const info = await getBatteryInfo();
+      expect(info.isLowPowerMode).toBe(true);
+      expect(info.powerSavingHint).toContain('Likely');
     });
   });
 });
