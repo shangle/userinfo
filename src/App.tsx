@@ -278,10 +278,10 @@ const App: React.FC = () => {
   ];
 
   return (
-    <div className="wrap">
+    <main className="wrap">
       <Hero browser={browser} os={os} deviceType={deviceType} />
 
-      <section className="grid">
+      <section className="grid" aria-label="Support details and tools">
         <Card title="The most important information" className="summary">
           <Summary 
             browser={browser} 
@@ -303,15 +303,16 @@ const App: React.FC = () => {
                 placeholder="Type a support email address" 
                 value={supportEmail}
                 onChange={(e) => setSupportEmail(e.target.value)}
+                aria-describedby="supportEmailNote"
               />
-              <div className="small-note">If the page link already includes an email address, it will appear here automatically.</div>
+              <div className="small-note" id="supportEmailNote">If the page link already includes an email address, it will appear here automatically.</div>
             </div>
             <div className="button-row">
               <button className="btn btn-primary btn-big" onClick={handleEmailSupport}>Open email</button>
               <button className="btn btn-neutral btn-big" onClick={handleCopyInfo}>Copy details</button>
             </div>
           </div>
-          <div className="small-note">{actionStatus}</div>
+          <div className="small-note" role="status">{actionStatus}</div>
         </Card>
 
         {enabledExtensions.includes('help') && (
@@ -322,7 +323,7 @@ const App: React.FC = () => {
                   {showAllHelp ? 'Showing all help topics.' : `Showing topics that best match ${browser.name} on ${os}.`}
                 </div>
               </div>
-              <button className="btn btn-secondary" onClick={() => setShowAllHelp(!showAllHelp)}>
+              <button className="btn btn-secondary" onClick={() => setShowAllHelp(!showAllHelp)} aria-pressed={showAllHelp}>
                 {showAllHelp ? 'Show only relevant help' : 'Show all help topics'}
               </button>
             </div>
@@ -331,9 +332,9 @@ const App: React.FC = () => {
               <h3>Friendly troubleshooting guide</h3>
               <div className="small-note">If you are not sure where to start, go in this order and do just one thing at a time.</div>
               <div className="guide-steps">
-                <div className="guide-step"><span className="step-number">1</span><strong>Read the top script to support.</strong><br />Tell them your browser, operating system, and device type exactly as shown.</div>
-                <div className="guide-step"><span className="step-number">2</span><strong>Check whether you are online.</strong><br />If the page says you are offline, reconnect to the internet before trying again.</div>
-                <div className="guide-step"><span className="step-number">3</span><strong>Close and reopen the browser.</strong><br />Then return to the banking site and try again.</div>
+                <div className="guide-step"><span className="step-number" aria-hidden="true">1</span><strong>Read the top script to support.</strong><br />Tell them your browser, operating system, and device type exactly as shown.</div>
+                <div className="guide-step"><span className="step-number" aria-hidden="true">2</span><strong>Check whether you are online.</strong><br />If the page says you are offline, reconnect to the internet before trying again.</div>
+                <div className="guide-step"><span className="step-number" aria-hidden="true">3</span><strong>Close and reopen the browser.</strong><br />Then return to the banking site and try again.</div>
               </div>
             </div>
 
@@ -398,36 +399,36 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="extension-toggles" style={{marginTop: '15px'}}>
-              <div className="small-note" style={{marginBottom: '8px'}}>Active Modules (Extensions)</div>
-              <div style={{display: 'flex', gap: '15px', flexWrap: 'wrap'}}>
-                <label style={{display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px'}}>
+            <fieldset className="extension-toggles">
+              <legend className="small-note" style={{marginBottom: '8px', border: 'none', padding: 0}}>Active Modules (Extensions)</legend>
+              <div className="toggle-list">
+                <label className="toggle-item">
                   <input type="checkbox" checked={enabledExtensions.includes('help')} onChange={() => toggleExtension('help')} /> Help Guide
                 </label>
-                <label style={{display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px'}}>
+                <label className="toggle-item">
                   <input type="checkbox" checked={enabledExtensions.includes('common')} onChange={() => toggleExtension('common')} /> Privacy/VPN
                 </label>
-                <label style={{display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px'}}>
+                <label className="toggle-item">
                   <input type="checkbox" checked={enabledExtensions.includes('tech')} onChange={() => toggleExtension('tech')} /> Tech Details
                 </label>
-                <label style={{display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px'}}>
+                <label className="toggle-item">
                   <input type="checkbox" checked={enabledExtensions.includes('generator')} onChange={() => toggleExtension('generator')} /> Link Generator
                 </label>
               </div>
-            </div>
+            </fieldset>
 
             <div className="button-row" style={{marginTop:'18px'}}>
               <button className="btn btn-primary" onClick={handleGenerateLink}>Generate link</button>
               <button className="btn btn-neutral" onClick={handleCopyLink}>Copy link</button>
             </div>
-            {generatedLink && <div className="generated-link">{generatedLink}</div>}
-            <div className="small-note">{generatorStatus}</div>
+            {generatedLink && <div className="generated-link" role="log">{generatedLink}</div>}
+            <div className="small-note" role="status">{generatorStatus}</div>
           </Card>
         )}
       </section>
 
-      <div className="footer">Powered by UserInfo.</div>
-    </div>
+      <footer className="footer">Powered by UserInfo.</footer>
+    </main>
   );
 };
 

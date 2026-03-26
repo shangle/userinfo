@@ -7,11 +7,12 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ title, className = '', children }) => {
+  const id = title.toLowerCase().replace(/\s+/g, '-');
   return (
-    <div className={`card ${className}`}>
-      <h2>{title}</h2>
+    <section className={`card ${className}`} aria-labelledby={id}>
+      <h2 id={id}>{title}</h2>
       {children}
-    </div>
+    </section>
   );
 };
 
