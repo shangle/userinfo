@@ -614,3 +614,74 @@ export const detectFonts = (): FontInfo => {
 
   return { available, missing, rendering };
 };
+
+export interface PeripheralInfo {
+  gamepads: {
+    id: string;
+    index: number;
+    mapping: string;
+    buttons: number;
+    axes: number;
+  }[];
+  midi: {
+    supported: boolean;
+    inputs: { name: string; manufacturer: string; state: string }[];
+    outputs: { name: string; manufacturer: string; state: string }[];
+  };
+}
+
+export const getPeripheralInfo = async (): Promise<PeripheralInfo> => {
+  const info: PeripheralInfo = {
+    gamepads: [],
+    midi: {
+      supported: 'requestMIDIAccess' in navigator,
+      inputs: [],
+      outputs: []
+    }
+  };
+
+  // Detect Gamepads
+  try {
+    if (navigator.getGamepads) {
+      const gamepads = navigator.getGamepads();
+      for (const gp of gamepads) {
+        if (gp) {
+          info.gamepads.push({
+            id: gp.id,
+            index: gp.index,
+            mapping: gp.mapping,
+            buttons: gp.buttons.length,
+            axes: gp.axes.length
+          });
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error detecting gamepads:', e);
+  }
+
+  // Detect MIDI
+  if (info.midi.supported) {
+    try {
+      const midiAccess = await navigator.requestMIDIAccess({ sysex: false });
+      midiAccess.inputs.forEach((input: any) => {
+        info.midi.inputs.push({
+          name: input.name || 'Unknown',
+          manufacturer: input.manufacturer || 'Unknown',
+          state: input.state || 'Unknown'
+        });
+      });
+      midiAccess.outputs.forEach((output: any) => {
+        info.midi.outputs.push({
+          name: output.name || 'Unknown',
+          manufacturer: output.manufacturer || 'Unknown',
+          state: output.state || 'Unknown'
+        });
+      });
+    } catch (e) {
+      console.error('Error detecting MIDI devices:', e);
+    }
+  }
+
+  return info;
+};

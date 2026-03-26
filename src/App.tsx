@@ -15,6 +15,7 @@ import ExtensionConflicts from './components/ExtensionConflicts';
 import MemoryDiagnostics from './components/MemoryDiagnostics';
 import MediaCapabilities from './components/MediaCapabilities';
 import FontDetection from './components/FontDetection';
+import PeripheralScan from './components/PeripheralScan';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -31,6 +32,7 @@ const App: React.FC = () => {
   const [protocol, setProtocol] = useState<detect.NetworkProtocolInfo | null>(null);
   const [media, setMedia] = useState<detect.MediaCapabilitiesInfo | null>(null);
   const [fonts, setFonts] = useState<detect.FontInfo | null>(null);
+  const [peripherals, setPeripherals] = useState<detect.PeripheralInfo | null>(null);
   const [extensions, setExtensions] = useState<detect.ExtensionConflictInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
@@ -39,7 +41,7 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts', 'peripherals']);
 
   const now = useMemo(() => new Date(), []);
 
@@ -52,6 +54,7 @@ const App: React.FC = () => {
       setProtocol(prev => prev ? { ...prev, ...ssl } : { ...initialProtocol, ...ssl });
     });
     detect.getMediaCapabilitiesInfo().then(setMedia);
+    detect.getPeripheralInfo().then(setPeripherals);
     setFonts(detect.detectFonts());
     setExtensions(detect.detectExtensionConflicts());
   }, []);
@@ -166,6 +169,14 @@ const App: React.FC = () => {
       basePairs.push(['Available Fonts', fonts.available.length + ' detected']);
       basePairs.push(['Font Smoothing', fonts.rendering.fontSmoothing]);
       basePairs.push(['Text Rendering', fonts.rendering.textRendering]);
+    }
+
+    if (peripherals) {
+      basePairs.push(['Gamepads Connected', String(peripherals.gamepads.length)]);
+      basePairs.push(['MIDI Support', peripherals.midi.supported ? 'Yes' : 'No']);
+      if (peripherals.midi.supported) {
+        basePairs.push(['MIDI Inputs', String(peripherals.midi.inputs.length)]);
+      }
     }
 
     return [
@@ -514,6 +525,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('peripherals') && (
+              <Card title="Peripheral & Input Scan" className="peripherals">
+                <PeripheralScan info={peripherals} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('extensions') && (
               <Card title="Browser Extension Conflicts" className="extensions">
                 <ExtensionConflicts info={extensions} />
@@ -585,6 +602,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('media')} onChange={() => toggleExtension('media')} /> Media & DRM
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('peripherals')} onChange={() => toggleExtension('peripherals')} /> Peripheral Scan
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('extensions')} onChange={() => toggleExtension('extensions')} /> Extension Audit
