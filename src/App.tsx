@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as detect from './utils/detection';
+import Card from './components/Card';
+import Hero from './components/Hero';
+import Summary from './components/Summary';
 
 const App: React.FC = () => {
   const [browser] = useState(detect.getBrowserInfo());
@@ -71,7 +74,7 @@ const App: React.FC = () => {
       ['Secure context', secureContext],
       ['Do Not Track', dnt],
       ['Touch support', touch],
-      ['Max touch points', maxTouchPoints],
+      ['Max_touch_points', maxTouchPoints],
       ['Screen resolution', screenSize],
       ['Available screen size', (window.screen && window.screen.availWidth && window.screen.availHeight) ? (window.screen.availWidth + ' × ' + window.screen.availHeight) : 'Not available'],
       ['Viewport size', viewportSize],
@@ -248,42 +251,20 @@ const App: React.FC = () => {
 
   return (
     <div className="wrap">
-      <section className="hero">
-        <h1>Support Helper</h1>
-        <p className="sub">This page is meant to make things easy. If someone from support asks, you can simply read the results out loud from this screen.</p>
-        <div className="support-script">
-          <div className="label">Read this to Support</div>
-          <div className="text">I am using {browser.name} version {browser.version} on {os} on a {deviceType}.</div>
-        </div>
-      </section>
+      <Hero browser={browser} os={os} deviceType={deviceType} />
 
       <section className="grid">
-        <div className="card summary">
-          <h2>The most important information</h2>
-          <div className="big-grid">
-            <div className="big-item">
-              <div className="big-label">Browser Name</div>
-              <div className="big-value">{browser.name}</div>
-            </div>
-            <div className="big-item">
-              <div className="big-label">Operating System</div>
-              <div className="big-value">{os}</div>
-            </div>
-            <div className="big-item">
-              <div className="big-label">Device Type</div>
-              <div className="big-value">{deviceType}</div>
-            </div>
-            <div className="big-item">
-              <div className="big-label">IP Address</div>
-              <div className="big-value">{network?.ip || 'Detecting...'}</div>
-            </div>
-          </div>
-          {outdatedWarning && <div className="notice warning">{outdatedWarning}</div>}
-          <div className="notice success">This page does not send your information anywhere by itself. It only shows information on your screen unless you choose to copy it or email it.</div>
-        </div>
+        <Card title="The most important information" className="summary">
+          <Summary 
+            browser={browser} 
+            os={os} 
+            deviceType={deviceType} 
+            ip={network?.ip || ''} 
+            outdatedWarning={outdatedWarning}
+          />
+        </Card>
 
-        <div className="card actions">
-          <h2>Send or copy your details</h2>
+        <Card title="Send or copy your details" className="actions">
           <div className="action-layout">
             <div className="field-group">
               <label className="field-label" htmlFor="supportEmailInput">Support email address</label>
@@ -303,12 +284,11 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="small-note">{actionStatus}</div>
-        </div>
+        </Card>
 
-        <div className="card help">
+        <Card title="Help with common browser problems" className="help">
           <div className="help-head">
             <div>
-              <h2>Help with common browser problems</h2>
               <div className="small-note">
                 {showAllHelp ? 'Showing all help topics.' : `Showing topics that best match ${browser.name} on ${os}.`}
               </div>
@@ -336,10 +316,9 @@ const App: React.FC = () => {
               </ol>
             </details>
           ))}
-        </div>
+        </Card>
 
-        <div className="card tech">
-          <h2>Technical details for support</h2>
+        <Card title="Technical details for support" className="tech">
           <p className="mini-note">If support needs more detail, open the section below.</p>
           <details>
             <summary>Show technical details and debugging information</summary>
@@ -352,10 +331,9 @@ const App: React.FC = () => {
               ))}
             </div>
           </details>
-        </div>
+        </Card>
 
-        <div className="card generator">
-          <h2>Create a support link</h2>
+        <Card title="Create a support link" className="generator">
           <p className="mini-note">Support staff can build a link with an email address and subject.</p>
           <div className="action-layout">
             <div className="field-group">
@@ -386,7 +364,7 @@ const App: React.FC = () => {
           </div>
           {generatedLink && <div className="generated-link">{generatedLink}</div>}
           <div className="small-note">{generatorStatus}</div>
-        </div>
+        </Card>
       </section>
 
       <div className="footer">Powered by UserInfo.</div>
@@ -395,3 +373,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
