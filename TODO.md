@@ -2,7 +2,7 @@
 
 ## Technical Tasks (Priority)
 - [x] Add unit tests for detection logic.
-- [ ] Add CI/CD for automatic GitHub Pages deployment.
+- [x] Add CI/CD for automatic GitHub Pages deployment.
 
 ## Core Updates
 - [x] Remove "Created by ChoiceOne" branding.
