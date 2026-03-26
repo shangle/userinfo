@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Friendly Computer & Browser Info</title>
+  <style>
+    :root {
+      --bg1: #fff7cc;
+      --bg2: #e6fbff;
+      --bg3: #ffe5f1;
+      --card: rgba(255,255,255,0.95);
+      --ink: #17324d;
+      --muted: #5c6f82;
+      --accent: #ff8f3d;
+      --accent-2: #4ac1ff;
+      --accent-3: #7ad67a;
+      --border: #d7ebf6;
+      --soft: #f7fbff;
+      --warning-bg: #fff3d9;
+      --warning-border: #ffcf74;
+      --warning-ink: #7a5200;
+      --success-bg: #ecfbef;
+      --success-border: #bde7c5;
+      --success-ink: #1f6e3f;
+      --danger-bg: #fff0f0;
+      --danger-border: #f2c4c4;
+      --danger-ink: #8a2f2f;
+      --shadow: 0 16px 40px rgba(58, 91, 122, 0.15);
+      --radius: 24px;
+      --focus: 0 0 0 4px rgba(74,193,255,0.28);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 45%, var(--bg3) 100%);
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 18px 48px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,0.97), rgba(255,255,255,0.91));
+      border: 1px solid rgba(255,255,255,0.78);
+      box-shadow: var(--shadow);
+      border-radius: 30px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 200px;
+      height: 200px;
+      right: -50px;
+      top: -60px;
+      background: radial-gradient(circle, #ffe38a 0%, transparent 70%);
+    }
+
+    .hero::after {
+      width: 240px;
+      height: 240px;
+      left: -80px;
+      bottom: -100px;
+      background: radial-gradient(circle, #8edbff 0%, transparent 70%);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.1;
+    }
+
+    .sub {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 860px;
+      margin: 0;
+    }
+
+    .support-script {
+      margin-top: 18px;
+      background: linear-gradient(135deg, #fff8df, #fffef6);
+      border: 1px solid #ffe09f;
+      color: #6e5617;
+      padding: 16px 18px;
+      border-radius: 18px;
+    }
+
+    .support-script .label {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .support-script .text {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #5d4300;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .summary, .actions, .help, .tech, .generator { grid-column: span 12; }
+    .key, .plain { grid-column: span 12; }
+
+    @media (min-width: 900px) {
+      .key { grid-column: span 6; }
+      .plain { grid-column: span 6; }
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.65rem;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.18rem;
+    }
+
+    .big-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+
+    .big-item {
+      background: linear-gradient(135deg, #ffffff, #f6fcff);
+      border: 1px solid #d9edf8;
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .big-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .big-value {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--ink);
+      word-break: break-word;
+    }
+
+    .notice {
+      border-radius: 18px;
+      padding: 14px 16px;
+      margin-top: 14px;
+      border: 1px solid transparent;
+      font-size: 1rem;
+    }
+
+    .notice.warning {
+      background: var(--warning-bg);
+      color: var(--warning-ink);
+      border-color: var(--warning-border);
+    }
+
+    .notice.success {
+      background: var(--success-bg);
+      color: var(--success-ink);
+      border-color: var(--success-border);
+    }
+
+    .notice.danger {
+      background: var(--danger-bg);
+      color: var(--danger-ink);
+      border-color: var(--danger-border);
+    }
+
+    .action-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: end;
+    }
+
+    @media (min-width: 880px) {
+      .action-layout {
+        grid-template-columns: 1.2fr auto;
+      }
+    }
+
+    .field-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field-label {
+      font-weight: 800;
+      color: var(--ink);
+      font-size: 1rem;
+    }
+
+    .field-input {
+      width: 100%;
+      border: 1px solid #cfe3f2;
+      background: white;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      color: var(--ink);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    .field-input:focus {
+      outline: none;
+      box-shadow: var(--focus);
+      border-color: #9edcff;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      border-radius: 18px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 800;
+      box-shadow: 0 10px 24px rgba(58, 91, 122, 0.12);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(58, 91, 122, 0.18); }
+    .btn:focus { outline: none; box-shadow: var(--focus), 0 14px 28px rgba(58, 91, 122, 0.18); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ffb24d, #ff8f3d);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #e9f8ff, #d6f1ff);
+      color: #11577d;
+      border: 1px solid #c7ebff;
+    }
+
+    .btn-neutral {
+      background: linear-gradient(135deg, #ffffff, #f4fbff);
+      color: #184d72;
+      border: 1px solid #d8edf8;
+    }
+
+    .btn-big {
+      padding: 18px 22px;
+      font-size: 1.08rem;
+      border-radius: 22px;
+    }
+
+    .small-note {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ffffff, #f9fdff);
+      border: 1px solid #e1eff7;
+    }
+
+    @media (min-width: 700px) {
+      .row {
+        grid-template-columns: 190px 1fr;
+        align-items: center;
+      }
+    }
+
+    .row-label { font-weight: 800; color: var(--ink); }
+    .row-value { color: #23425f; word-break: break-word; }
+
+    .friendly-box {
+      background: linear-gradient(135deg, #fffef7, #f7fcff);
+      border: 1px dashed #cfe3f3;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .friendly-box strong { color: #184c72; }
+
+    .guide-box {
+      background: linear-gradient(135deg, #fffefc, #f8fdff);
+      border: 1px solid #e2eef7;
+      border-radius: 20px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .guide-steps {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .guide-step {
+      background: white;
+      border: 1px solid #e4eff7;
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff4d7;
+      color: #7a5200;
+      font-weight: 800;
+      margin-right: 8px;
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ffffff, #f8fdff);
+      padding: 14px 16px;
+      margin-top: 12px;
+    }
+
+    details[open] { background: linear-gradient(135deg, #fffefc, #f4fbff); }
+
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--ink);
+      outline: none;
+    }
+
+    summary:focus { box-shadow: var(--focus); border-radius: 10px; }
+    summary::marker { color: var(--accent-2); }
+
+    .help-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .help-topic { margin-top: 12px; }
+    .help-topic[hidden] { display: none !important; }
+    .nested-browser-help[hidden] { display: none !important; }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .tech-item {
+      background: #ffffff;
+      border: 1px solid #e2eef6;
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    .tech-item .label {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .tech-item .value {
+      font-size: 0.98rem;
+      color: var(--ink);
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .steps { margin: 12px 0 0; padding-left: 22px; }
+    .steps li { margin-bottom: 10px; }
+
+    .mini-note {
+      margin-top: 12px;
+      font-size: 0.97rem;
+      color: var(--muted);
+    }
+
+    .generated-link {
+      margin-top: 14px;
+      background: #ffffff;
+      border: 1px solid #dbeaf5;
+      border-radius: 18px;
+      padding: 14px;
+      word-break: break-all;
+      color: #184d72;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #45627d;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .mono { font-family: Consolas, Menlo, Monaco, monospace; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Computer & Browser Helper</h1>
+      <p class="sub">This page is meant to make things easy. If someone from support asks, you can simply read the results out loud from this screen.</p>
+      <div class="support-script">
+        <div class="label">Read this to Support</div>
+        <div class="text" id="supportScriptText">I am using Detecting…</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card summary">
+        <h2>The most important information</h2>
+        <div class="big-grid">
+          <div class="big-item">
+            <div class="big-label">Browser Name</div>
+            <div class="big-value" id="browserName">Detecting…</div>
+          </div>
+          <div class="big-item">
+            <div class="big-label">Operating System</div>
+            <div class="big-value" id="operatingSystem">Detecting…</div>
+          </div>
+          <div class="big-item">
+            <div class="big-label">Device Type</div>
+            <div class="big-value" id="deviceType">Detecting…</div>
+          </div>
+          <div class="big-item">
+            <div class="big-label">Browser Version</div>
+            <div class="big-value" id="browserVersion">Detecting…</div>
+          </div>
+        </div>
+        <div class="notice warning hidden" id="browserWarning"></div>
+        <div class="notice success" id="privacyNote">This page does not send your information anywhere by itself. It only shows information on your screen unless you choose to copy it or email it.</div>
+      </div>
+
+      <div class="card actions">
+        <h2>Send or copy your details</h2>
+        <div class="action-layout">
+          <div class="field-group">
+            <label class="field-label" for="supportEmailInput">Support email address</label>
+            <input class="field-input" id="supportEmailInput" type="email" placeholder="Type a support email address" autocomplete="email" />
+            <div class="small-note" id="emailSourceNote">If the page link already includes an email address, it will appear here automatically.</div>
+          </div>
+          <div class="button-row">
+            <button class="btn btn-primary btn-big" id="emailSupportBtn" type="button">Open email</button>
+            <button class="btn btn-neutral btn-big" id="copyInfoBtn" type="button">Copy details</button>
+          </div>
+        </div>
+        <div class="small-note" id="actionStatus">When ready, support can have you email or copy your device details.</div>
+      </div>
+
+      <div class="card help">
+        <div class="help-head">
+          <div>
+            <h2>Help with common browser problems</h2>
+            <div class="small-note" id="relevantHelpSummary">We are finding the best help topics for this device.</div>
+          </div>
+          <button class="btn btn-secondary" id="helpToggleBtn" type="button">Show all help topics</button>
+        </div>
+
+        <div class="guide-box">
+          <h3>Friendly troubleshooting guide</h3>
+          <div class="small-note">If you are not sure where to start, go in this order and do just one thing at a time.</div>
+          <div class="guide-steps">
+            <div class="guide-step"><span class="step-number">1</span><strong>Read the top script to support.</strong><br />Tell them your browser, operating system, and device type exactly as shown.</div>
+            <div class="guide-step"><span class="step-number">2</span><strong>Check whether you are online.</strong><br />If the page says you are offline, reconnect to the internet before trying again.</div>
+            <div class="guide-step"><span class="step-number">3</span><strong>Close and reopen the browser.</strong><br />Then return to the banking site and try again.</div>
+            <div class="guide-step"><span class="step-number">4</span><strong>Use the matching help section below.</strong><br />The page is showing the help that best matches your device and browser.</div>
+            <div class="guide-step"><span class="step-number">5</span><strong>If needed, clear cache or check cookie settings.</strong><br />These two steps fix many sign-in and page loading problems.</div>
+            <div class="guide-step"><span class="step-number">6</span><strong>If support asks, send or copy your details.</strong><br />Use the buttons above so support can see the technical information.</div>
+          </div>
+        </div>
+
+        <details class="help-topic" data-browsers="Chrome,Microsoft Edge,Firefox,Safari,Opera,Samsung Internet" data-devices="Desktop or Laptop,Phone,Tablet" data-os="Windows,Windows 10 or 11,Windows 8.1,Windows 8,Windows 7,macOS,macOS Catalina,macOS Big Sur,macOS Monterey,macOS Ventura,macOS Sonoma,Android,iPhone (iOS),iPad (iPadOS),Linux,Chrome OS">
+          <summary>Website will not load, looks broken, or keeps spinning</summary>
+          <ol class="steps">
+            <li>Make sure this page says you are online.</li>
+            <li>Close the browser tab and open the banking site again.</li>
+            <li>If it still looks wrong, clear your browser cache using the matching section below.</li>
+            <li>Try again after fully closing and reopening the browser.</li>
+            <li>If support asks, copy or email the details from the buttons above.</li>
+          </ol>
+        </details>
+
+        <details class="help-topic" data-browsers="Chrome,Microsoft Edge,Firefox,Safari,Opera,Samsung Internet" data-devices="Desktop or Laptop,Phone,Tablet" data-os="Windows,Windows 10 or 11,Windows 8.1,Windows 8,Windows 7,macOS,macOS Catalina,macOS Big Sur,macOS Monterey,macOS Ventura,macOS Sonoma,Android,iPhone (iOS),iPad (iPadOS),Linux,Chrome OS">
+          <summary>Website keeps signing me out or forgetting me</summary>
+          <ol class="steps">
+            <li>Make sure cookies are enabled in your browser.</li>
+            <li>Check the section below about making sure your browser is <strong>not</strong> automatically clearing cookies or browsing history.</li>
+            <li>Avoid using private or incognito browsing if you want the site to remember you.</li>
+            <li>Close the browser and open it again after changing settings.</li>
+          </ol>
+        </details>
+
+        <details class="help-topic" data-browsers="Chrome,Microsoft Edge,Firefox,Safari,Opera,Samsung Internet" data-devices="Desktop or Laptop,Phone,Tablet" data-os="Windows,Windows 10 or 11,Windows 8.1,Windows 8,Windows 7,macOS,macOS Catalina,macOS Big Sur,macOS Monterey,macOS Ventura,macOS Sonoma,Android,iPhone (iOS),iPad (iPadOS),Linux,Chrome OS">
+          <summary>Buttons do not respond or sign-in acts strangely</summary>
+          <ol class="steps">
+            <li>Some banking pages need cookies and saved site data to work correctly.</li>
+            <li>Make sure you are using a current version of a major browser.</li>
+            <li>If the page still behaves oddly, clear the cache and try again.</li>
+            <li>If you have browser add-ons or blockers installed, support may ask you to temporarily disable them.</li>
+          </ol>
+        </details>
+
+        <details class="help-topic" data-browsers="Chrome,Microsoft Edge,Firefox,Safari" data-devices="Desktop or Laptop,Phone,Tablet" data-os="Windows,Windows 10 or 11,Windows 8.1,Windows 8,Windows 7,macOS,macOS Catalina,macOS Big Sur,macOS Monterey,macOS Ventura,macOS Sonoma,Android,iPhone (iOS),iPad (iPadOS),Linux,Chrome OS">
+          <summary>How to clear browser cache</summary>
+          <p class="mini-note">If a website looks wrong, will not load properly, or keeps showing an old version, clearing the cache can help.</p>
+
+          <details data-browsers="Chrome" class="nested-browser-help">
+            <summary>Google Chrome</summary>
+            <ol class="steps">
+              <li>Open <strong>Chrome</strong>.</li>
+              <li>Press <strong>Ctrl + Shift + Delete</strong> on Windows, or <strong>Command + Shift + Delete</strong> on Mac.</li>
+              <li>Choose a time range. If unsure, choose <strong>All time</strong>.</li>
+              <li>Check <strong>Cached images and files</strong>.</li>
+              <li>You may leave <strong>Cookies</strong> unchecked unless support asks you to clear them too.</li>
+              <li>Click <strong>Clear data</strong>.</li>
+              <li>Close the browser and open it again.</li>
+            </ol>
+          </details>
+
+          <details data-browsers="Microsoft Edge" class="nested-browser-help">
+            <summary>Microsoft Edge</summary>
+            <ol class="steps">
+              <li>Open <strong>Edge</strong>.</li>
+              <li>Press <strong>Ctrl + Shift + Delete</strong>.</li>
+              <li>Choose a time range. If unsure, choose <strong>All time</strong>.</li>
+              <li>Check <strong>Cached images and files</strong>.</li>
+              <li>Leave <strong>Cookies and other site data</strong> unchecked unless support asks for that too.</li>
+              <li>Click <strong>Clear now</strong>.</li>
+              <li>Close Edge and open it again.</li>
+            </ol>
+          </details>
+
+          <details data-browsers="Firefox" class="nested-browser-help">
+            <summary>Mozilla Firefox</summary>
+            <ol class="steps">
+              <li>Open <strong>Firefox</strong>.</li>
+              <li>Press <strong>Ctrl + Shift + Delete</strong> on Windows, or <strong>Command + Shift + Delete</strong> on Mac.</li>
+              <li>Set the time range. If unsure, choose everything available.</li>
+              <li>Check <strong>Cache</strong>.</li>
+              <li>Uncheck other boxes unless support asks you to clear them too.</li>
+              <li>Click <strong>Clear</strong> or <strong>OK</strong>.</li>
+              <li>Close Firefox and reopen it.</li>
+            </ol>
+          </details>
+
+          <details data-browsers="Safari" data-os="macOS,macOS Catalina,macOS Big Sur,macOS Monterey,macOS Ventura,macOS Sonoma" class="nested-browser-help">
+            <summary>Safari on Mac</summary>
+            <ol class="steps">
+              <li>Open <strong>Safari</strong>.</li>
+              <li>At the top of the screen, click <strong>Safari</strong>, then <strong>Settings</strong> or <strong>Preferences</strong>.</li>
+              <li>Open the <strong>Advanced</strong> tab and turn on <strong>Show Develop menu in menu bar</strong> if you do not already see Develop.</li>
+              <li>At the top of the screen, click <strong>Develop</strong>.</li>
+              <li>Click <strong>Empty Caches</strong>.</li>
+              <li>Close Safari and open it again.</li>
+            </ol>
+          </details>
+
+          <details data-browsers="Safari" data-os="iPhone (iOS),iPad (iPadOS)" class="nested-browser-help">
+            <summary>Safari on iPhone or iPad</summary>
+            <ol class="steps">
+              <li>Open the <strong>Settings</strong> app on your device.</li>
+              <li>Scroll down and tap <strong>Apps</strong>, then <strong>Safari</strong> on newer iPhones/iPads, or just tap <strong>Safari</strong> on some versions.</li>
+              <li>Tap <strong>Clear History and Website Data</strong>.</li>
+              <li>Confirm if asked.</li>
+              <li>Open Safari again and try the website.</li>
+            </ol>
+          </details>
+        </details>
+
+        <details class="help-topic" data-browsers="Chrome,Microsoft Edge,Firefox,Safari" data-devices="Desktop or Laptop,Phone,Tablet" data-os="Windows,Windows 10 or 11,Windows 8.1,Windows 8,Windows 7,macOS,macOS Catalina,macOS Big Sur,macOS Monterey,macOS Ventura,macOS Sonoma,Android,iPhone (iOS),iPad (iPadOS),Linux,Chrome OS">
+          <summary>How to make sure your browser is not automatically clearing cookies or history</summary>
+          <p class="mini-note">If you keep getting signed out, websites forget you, or your browsing history disappears, these settings may be turned on.</p>
+
+          <details data-browsers="Chrome" class="nested-browser-help">
+            <summary>Google Chrome</summary>
+            <ol class="steps">
+              <li>Open <strong>Chrome</strong>.</li>
+              <li>Click the <strong>three dots</strong> in the top-right corner.</li>
+              <li>Click <strong>Settings</strong>.</li>
+              <li>Click <strong>Privacy and security</strong>.</li>
+              <li>Click <strong>Third-party cookies</strong> or <strong>Cookies and other site data</strong>.</li>
+              <li>Make sure you do <strong>not</strong> have a setting turned on that clears cookies when Chrome closes.</li>
+              <li>Go back and click <strong>Clear browsing data</strong> only when you want to clear things manually.</li>
+              <li>If you use an extension that says it cleans privacy or browsing data, consider turning it off and ask support for help.</li>
+            </ol>
+          </details>
+
+          <details data-browsers="Microsoft Edge" class="nested-browser-help">
+            <summary>Microsoft Edge</summary>
+            <ol class="steps">
+              <li>Open <strong>Edge</strong>.</li>
+              <li>Click the <strong>three dots</strong> in the top-right corner.</li>
+              <li>Click <strong>Settings</strong>.</li>
+              <li>Click <strong>Privacy, search, and services</strong>.</li>
+              <li>Scroll to <strong>Clear browsing data</strong>.</li>
+              <li>Click <strong>Choose what to clear every time you close the browser</strong>.</li>
+              <li>Make sure the switches for <strong>Cookies and other site data</strong> and <strong>Browsing history</strong> are turned <strong>off</strong> unless you intentionally want them cleared every time.</li>
+              <li>Close Settings when finished.</li>
+            </ol>
+          </details>
+
+          <details data-browsers="Firefox" class="nested-browser-help">
+            <summary>Mozilla Firefox</summary>
+            <ol class="steps">
+              <li>Open <strong>Firefox</strong>.</li>
+              <li>Click the <strong>three lines</strong> in the top-right corner.</li>
+              <li>Click <strong>Settings</strong>.</li>
+              <li>Click <strong>Privacy & Security</strong>.</li>
+              <li>Scroll to the <strong>History</strong> section.</li>
+              <li>If Firefox says it will use custom settings for history, look for options that say <strong>Clear history when Firefox closes</strong>.</li>
+              <li>Make sure that setting is <strong>unchecked</strong> if you do not want history cleared every time.</li>
+              <li>Also look for cookie settings that remove cookies when Firefox closes, and turn those off if needed.</li>
+            </ol>
+          </details>
+
+          <details data-browsers="Safari" data-os="macOS,macOS Catalina,macOS Big Sur,macOS Monterey,macOS Ventura,macOS Sonoma" class="nested-browser-help">
+            <summary>Safari on Mac</summary>
+            <ol class="steps">
+              <li>Open <strong>Safari</strong>.</li>
+              <li>Click <strong>Safari</strong> at the top of the screen, then <strong>Settings</strong> or <strong>Preferences</strong>.</li>
+              <li>Open the <strong>Privacy</strong> tab.</li>
+              <li>Review cookie and website tracking settings.</li>
+              <li>If websites keep forgetting you, ask support whether your privacy settings are too strict for the site you are using.</li>
+              <li>If you use private browsing often, remember that private windows do not keep browsing history the same way normal windows do.</li>
+            </ol>
+          </details>
+
+          <details data-browsers="Safari" data-os="iPhone (iOS),iPad (iPadOS)" class="nested-browser-help">
+            <summary>Safari on iPhone or iPad</summary>
+            <ol class="steps">
+              <li>Open the <strong>Settings</strong> app.</li>
+              <li>Tap <strong>Apps</strong>, then <strong>Safari</strong> on newer versions, or tap <strong>Safari</strong> directly on some versions.</li>
+              <li>Look for privacy settings and website data settings.</li>
+              <li>If you are having trouble staying signed in, ask support whether any of these settings should be adjusted.</li>
+              <li>If you use private browsing, remember that it is designed to keep less history.</li>
+            </ol>
+          </details>
+
+          <div class="friendly-box">
+            <strong>Simple sign something may be clearing cookies:</strong> A website keeps forgetting you or makes you sign in every time you close the browser.
+          </div>
+          <div class="friendly-box">
+            <strong>Simple sign something may be clearing history:</strong> You visit a website, then later it does not appear in your browser history.
+          </div>
+        </details>
+      </div>
+
+      <div class="card key">
+        <h2>Simple read-back details</h2>
+        <div class="list" id="plainEnglishList"></div>
+      </div>
+
+      <div class="card plain">
+        <h2>What this means</h2>
+        <div class="friendly-box"><strong>Your browser</strong> is the program you use to open websites, such as Chrome, Edge, Safari, or Firefox.</div>
+        <div class="friendly-box"><strong>Your operating system</strong> is the main software that runs your computer or device, such as Windows, macOS, Android, or iPhone/iPad.</div>
+        <div class="friendly-box"><strong>Cookies</strong> help websites remember you. If cookies keep getting deleted, you may be signed out often or websites may forget your settings.</div>
+        <div class="friendly-box"><strong>Cache</strong> is saved website data that helps pages load faster. Sometimes clearing it fixes website problems.</div>
+        <div class="friendly-box"><strong>Screen size</strong> helps support understand how a website may appear on your device.</div>
+      </div>
+
+      <div class="card tech">
+        <h2>Technical details for support</h2>
+        <p class="mini-note">If support needs more detail, open the section below.</p>
+        <details>
+          <summary>Show technical details and debugging information</summary>
+          <div class="tech-grid" id="techGrid"></div>
+        </details>
+      </div>
+
+      <div class="card generator">
+        <h2>Create a support link</h2>
+        <p class="mini-note">Support staff can build a link with an email address and subject. Then copy the link and send it to a customer. When the customer opens the page, the support email will already be filled in.</p>
+        <div class="action-layout">
+          <div class="field-group">
+            <label class="field-label" for="generatorEmail">Support email address</label>
+            <input class="field-input" id="generatorEmail" type="email" placeholder="support@example.com" autocomplete="email" />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="generatorSubject">Email subject</label>
+            <input class="field-input" id="generatorSubject" type="text" placeholder="Online Banking Support Details" />
+          </div>
+        </div>
+        <div class="button-row" style="margin-top:14px;">
+          <button class="btn btn-primary" id="generateLinkBtn" type="button">Generate link</button>
+          <button class="btn btn-neutral" id="copyLinkBtn" type="button">Copy link</button>
+        </div>
+        <div class="generated-link" id="generatedLinkBox">Your generated link will appear here.</div>
+        <div class="small-note" id="generatorStatus">Tip: you can send the copied link by email, text message, or chat.</div>
+      </div>
+    </section>
+
+    <div class="footer">Created by ChoiceOne Bank.</div>
+  </div>
+
+  <script>
+    (function () {
+      function safe(value, fallback) {
+        if (value === undefined || value === null || value === '') return fallback || 'Not available';
+        return String(value);
+      }
+
+      function uaString() {
+        return navigator.userAgent || '';
+      }
+
+      function getBrowserInfo() {
+        const ua = uaString();
+        let name = 'Unknown Browser';
+        let version = 'Unknown';
+
+        const rules = [
+          { name: 'Microsoft Edge', regex: /Edg\/([\d\.]+)/ },
+          { name: 'Opera', regex: /OPR\/([\d\.]+)/ },
+          { name: 'Samsung Internet', regex: /SamsungBrowser\/([\d\.]+)/ },
+          { name: 'Firefox', regex: /Firefox\/([\d\.]+)/ },
+          { name: 'Chrome', regex: /Chrome\/([\d\.]+)/ },
+          { name: 'Safari', regex: /Version\/([\d\.]+).*Safari/ },
+          { name: 'Internet Explorer', regex: /MSIE\s([\d\.]+)/ },
+          { name: 'Internet Explorer', regex: /Trident\/.*rv:([\d\.]+)/ }
+        ];
+
+        for (const rule of rules) {
+          const match = ua.match(rule.regex);
+          if (match) {
+            name = rule.name;
+            version = match[1];
+            break;
+          }
+        }
+
+        return { name, version };
+      }
+
+      function getOSInfo() {
+        const ua = uaString();
+        const platform = navigator.platform || '';
+
+        if (/Windows NT 10\.0/.test(ua)) return 'Windows 10 or 11';
+        if (/Windows NT 6\.3/.test(ua)) return 'Windows 8.1';
+        if (/Windows NT 6\.2/.test(ua)) return 'Windows 8';
+        if (/Windows NT 6\.1/.test(ua)) return 'Windows 7';
+        if (/Windows/i.test(ua)) return 'Windows';
+        if (/Mac OS X 10[_.]15/.test(ua)) return 'macOS Catalina';
+        if (/Mac OS X 11[_.]/.test(ua)) return 'macOS Big Sur';
+        if (/Mac OS X 12[_.]/.test(ua)) return 'macOS Monterey';
+        if (/Mac OS X 13[_.]/.test(ua)) return 'macOS Ventura';
+        if (/Mac OS X 14[_.]/.test(ua)) return 'macOS Sonoma';
+        if (/Mac OS X/.test(ua) || /Mac/.test(platform)) return 'macOS';
+        if (/Android\s([\d\.]+)/.test(ua)) {
+          const m = ua.match(/Android\s([\d\.]+)/);
+          return 'Android ' + m[1];
+        }
+        if (/iPhone/.test(ua)) return 'iPhone (iOS)';
+        if (/iPad/.test(ua)) return 'iPad (iPadOS)';
+        if (/Linux/.test(ua)) return 'Linux';
+        if (/CrOS/.test(ua)) return 'Chrome OS';
+        return 'Unknown Operating System';
+      }
+
+      function getDeviceType() {
+        const ua = uaString();
+        if (/iPad|Tablet|PlayBook|Silk/i.test(ua)) return 'Tablet';
+        if (/Mobi|Android|iPhone|iPod/i.test(ua)) return 'Phone';
+        return 'Desktop or Laptop';
+      }
+
+      function cookiesEnabledStatus() {
+        try { return navigator.cookieEnabled ? 'Yes' : 'No'; } catch (e) { return 'Unknown'; }
+      }
+
+      function touchSupport() {
+        try { return ('ontouchstart' in window || navigator.maxTouchPoints > 0) ? 'Yes' : 'No'; } catch (e) { return 'Unknown'; }
+      }
+
+      function localStorageStatus() {
+        try {
+          const key = '__choiceone_test__';
+          localStorage.setItem(key, '1');
+          localStorage.removeItem(key);
+          return 'Available';
+        } catch (e) {
+          return 'Blocked or unavailable';
+        }
+      }
+
+      function sessionStorageStatus() {
+        try {
+          const key = '__choiceone_test__';
+          sessionStorage.setItem(key, '1');
+          sessionStorage.removeItem(key);
+          return 'Available';
+        } catch (e) {
+          return 'Blocked or unavailable';
+        }
+      }
+
+      function doNotTrackStatus() {
+        const dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+        if (dnt === '1' || dnt === 'yes') return 'On';
+        if (dnt === '0' || dnt === 'no') return 'Off';
+        return 'Not reported';
+      }
+
+      function colorSchemePreference() {
+        try {
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'Dark mode preferred';
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return 'Light mode preferred';
+          return 'No preference reported';
+        } catch (e) {
+          return 'Not available';
+        }
+      }
+
+      function reducedMotionPreference() {
+        try {
+          if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 'Reduce motion is on';
+          return 'Reduce motion is off';
+        } catch (e) {
+          return 'Not available';
+        }
+      }
+
+      function formatLanguages() {
+        if (navigator.languages && navigator.languages.length) return navigator.languages.join(', ');
+        return safe(navigator.language, 'Not available');
+      }
+
+      function addPlainRow(label, value) {
+        const parent = document.getElementById('plainEnglishList');
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = '<div class="row-label">' + label + '</div><div class="row-value">' + value + '</div>';
+        parent.appendChild(row);
+      }
+
+      function addTechItem(label, value) {
+        const parent = document.getElementById('techGrid');
+        const item = document.createElement('div');
+        item.className = 'tech-item';
+        item.innerHTML = '<div class="label">' + label + '</div><div class="value">' + value + '</div>';
+        parent.appendChild(item);
+      }
+
+      function parseListAttribute(value) {
+        if (!value) return [];
+        return value.split(',').map(function (item) { return item.trim(); }).filter(Boolean);
+      }
+
+      function matchesDataAttribute(element, attrName, value) {
+        const allowed = parseListAttribute(element.getAttribute(attrName));
+        if (!allowed.length) return true;
+        return allowed.indexOf(value) !== -1;
+      }
+
+      function parseMajorVersion(versionString) {
+        const m = String(versionString || '').match(/^(\d+)/);
+        return m ? parseInt(m[1], 10) : null;
+      }
+
+      function getOutdatedWarning(browserName, majorVersion, osName) {
+        if (!browserName || majorVersion === null) return '';
+        if (browserName === 'Internet Explorer') return 'This browser is too old for modern online banking and should not be used.';
+        if (browserName === 'Chrome' && majorVersion < 120) return 'Your Chrome browser may be out of date. A newer version is recommended for security and compatibility.';
+        if (browserName === 'Microsoft Edge' && majorVersion < 120) return 'Your Edge browser may be out of date. A newer version is recommended for security and compatibility.';
+        if (browserName === 'Firefox' && majorVersion < 115) return 'Your Firefox browser may be out of date. A newer version is recommended for security and compatibility.';
+        if (browserName === 'Safari' && /macOS|iPhone|iPad/.test(osName) && majorVersion < 16) return 'Your Safari browser may be out of date. A newer version is recommended for security and compatibility.';
+        if (browserName === 'Opera' && majorVersion < 105) return 'Your Opera browser may be out of date. A newer version is recommended for security and compatibility.';
+        if (browserName === 'Samsung Internet' && majorVersion < 20) return 'Your Samsung Internet browser may be out of date. A newer version is recommended for security and compatibility.';
+        return '';
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'absolute';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            resolve();
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }
+
+      const browser = getBrowserInfo();
+      const os = getOSInfo();
+      const deviceType = getDeviceType();
+      const now = new Date();
+      const timeZone = (Intl.DateTimeFormat().resolvedOptions() || {}).timeZone || 'Not available';
+      const online = typeof navigator.onLine === 'boolean' ? (navigator.onLine ? 'Yes' : 'No') : 'Unknown';
+      const language = safe(navigator.language, 'Not available');
+      const languages = formatLanguages();
+      const screenSize = (screen && screen.width && screen.height) ? (screen.width + ' × ' + screen.height) : 'Not available';
+      const viewportSize = window.innerWidth + ' × ' + window.innerHeight;
+      const pixelRatio = safe(window.devicePixelRatio, 'Not available');
+      const cores = safe(navigator.hardwareConcurrency, 'Not reported');
+      const memory = navigator.deviceMemory ? navigator.deviceMemory + ' GB (reported)' : 'Not reported';
+      const platform = safe(navigator.platform, 'Not reported');
+      const vendor = safe(navigator.vendor, 'Not reported');
+      const maxTouchPoints = safe(navigator.maxTouchPoints, 'Not reported');
+      const referrer = document.referrer ? document.referrer : 'None';
+      const javaEnabled = (navigator.javaEnabled && typeof navigator.javaEnabled === 'function') ? (navigator.javaEnabled() ? 'Yes' : 'No') : 'Not reported';
+      const historyLength = safe(history.length, 'Not reported');
+      const cookieStatus = cookiesEnabledStatus();
+      const localStore = localStorageStatus();
+      const sessionStore = sessionStorageStatus();
+      const dnt = doNotTrackStatus();
+      const touch = touchSupport();
+      const colorScheme = colorSchemePreference();
+      const reducedMotion = reducedMotionPreference();
+      const secureContextText = window.isSecureContext ? 'Yes' : 'No';
+      const techPairs = [];
+      let showAllHelp = false;
+
+      function addTechPair(label, value) {
+        techPairs.push([label, value]);
+        addTechItem(label, value);
+      }
+
+      document.getElementById('browserName').textContent = browser.name;
+      document.getElementById('operatingSystem').textContent = os;
+      document.getElementById('deviceType').textContent = deviceType;
+      document.getElementById('browserVersion').textContent = browser.version;
+      document.getElementById('supportScriptText').textContent = 'I am using ' + browser.name + ' version ' + browser.version + ' on ' + os + ' on a ' + deviceType + '.';
+
+      addPlainRow('Browser', browser.name + ' (version ' + browser.version + ')');
+      addPlainRow('Operating system', os);
+      addPlainRow('Type of device', deviceType);
+      addPlainRow('Internet connection', online === 'Yes' ? 'Your browser says you are online.' : online === 'No' ? 'Your browser says you are offline.' : 'Your browser did not report this clearly.');
+      addPlainRow('Cookies enabled', cookieStatus === 'Yes' ? 'Yes — websites should be able to remember basic settings.' : cookieStatus === 'No' ? 'No — some websites may not work correctly.' : 'Unknown');
+      addPlainRow('Screen size', screenSize + ' pixels');
+      addPlainRow('Browser window size', viewportSize + ' pixels');
+      addPlainRow('Language', language);
+      addPlainRow('Time zone', timeZone);
+      addPlainRow('Touchscreen support', touch === 'Yes' ? 'Yes' : touch === 'No' ? 'No' : 'Unknown');
+      addPlainRow('Page opened at', now.toLocaleString());
+
+      addTechPair('Browser name', browser.name);
+      addTechPair('Browser version', browser.version);
+      addTechPair('Operating system', os);
+      addTechPair('Device type', deviceType);
+      addTechPair('User agent', safe(navigator.userAgent, 'Not available'));
+      addTechPair('Platform', platform);
+      addTechPair('Vendor', vendor);
+      addTechPair('Language', language);
+      addTechPair('Languages', languages);
+      addTechPair('Time zone', timeZone);
+      addTechPair('Online', online);
+      addTechPair('Cookies enabled', cookieStatus);
+      addTechPair('Local storage', localStore);
+      addTechPair('Session storage', sessionStore);
+      addTechPair('Secure context', secureContextText);
+      addTechPair('Do Not Track', dnt);
+      addTechPair('Touch support', touch);
+      addTechPair('Max touch points', maxTouchPoints);
+      addTechPair('Screen resolution', screenSize);
+      addTechPair('Available screen size', (screen && screen.availWidth && screen.availHeight) ? (screen.availWidth + ' × ' + screen.availHeight) : 'Not available');
+      addTechPair('Viewport size', viewportSize);
+      addTechPair('Pixel ratio', String(pixelRatio));
+      addTechPair('Color depth', screen && screen.colorDepth ? String(screen.colorDepth) : 'Not available');
+      addTechPair('Reported CPU cores', cores);
+      addTechPair('Reported device memory', memory);
+      addTechPair('Java enabled', javaEnabled);
+      addTechPair('History length', historyLength);
+      addTechPair('Color scheme preference', colorScheme);
+      addTechPair('Reduced motion preference', reducedMotion);
+      addTechPair('Page URL', location.href);
+      addTechPair('Protocol', location.protocol);
+      addTechPair('Referrer', referrer);
+      addTechPair('Current date/time', now.toString());
+
+      const warningText = getOutdatedWarning(browser.name, parseMajorVersion(browser.version), os);
+      const warningEl = document.getElementById('browserWarning');
+      if (warningText) {
+        warningEl.textContent = warningText;
+        warningEl.classList.remove('hidden');
+      }
+
+      function filterHelp(showAll) {
+        const topics = Array.prototype.slice.call(document.querySelectorAll('.help-topic'));
+        let count = 0;
+        topics.forEach(function (topic) {
+          const match = showAll || (
+            matchesDataAttribute(topic, 'data-browsers', browser.name) &&
+            matchesDataAttribute(topic, 'data-devices', deviceType) &&
+            matchesDataAttribute(topic, 'data-os', os)
+          );
+          topic.hidden = !match;
+          if (match) count++;
+
+          const nested = Array.prototype.slice.call(topic.querySelectorAll('.nested-browser-help'));
+          nested.forEach(function (item) {
+            const nestedMatch = showAll || (
+              matchesDataAttribute(item, 'data-browsers', browser.name) &&
+              matchesDataAttribute(item, 'data-devices', deviceType) &&
+              matchesDataAttribute(item, 'data-os', os)
+            );
+            item.hidden = !nestedMatch;
+          });
+        });
+
+        const summary = document.getElementById('relevantHelpSummary');
+        const toggle = document.getElementById('helpToggleBtn');
+        if (showAll) {
+          summary.textContent = 'Showing all help topics for every supported browser and device.';
+          toggle.textContent = 'Show only relevant help';
+        } else {
+          summary.textContent = 'Showing ' + count + ' help topic' + (count === 1 ? '' : 's') + ' that best match this device: ' + browser.name + ' on ' + os + '.';
+          toggle.textContent = 'Show all help topics';
+        }
+      }
+
+      document.getElementById('helpToggleBtn').addEventListener('click', function () {
+        showAllHelp = !showAllHelp;
+        filterHelp(showAllHelp);
+      });
+      filterHelp(showAllHelp);
+
+      function makeEmailBody() {
+        const lines = [];
+        lines.push('Hello Support,');
+        lines.push('');
+        lines.push('I am sending my device and browser details from the support helper page.');
+        lines.push('');
+        techPairs.forEach(function (pair) {
+          lines.push(pair[0] + ': ' + pair[1]);
+        });
+        lines.push('');
+        lines.push('Thank you.');
+        return lines.join('\n');
+      }
+
+      function makePlainCopyText() {
+        const lines = [];
+        lines.push('Read this to Support:');
+        lines.push(document.getElementById('supportScriptText').textContent);
+        lines.push('');
+        techPairs.forEach(function (pair) {
+          lines.push(pair[0] + ': ' + pair[1]);
+        });
+        return lines.join('\n');
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const supportEmailInput = document.getElementById('supportEmailInput');
+      const emailSupportBtn = document.getElementById('emailSupportBtn');
+      const copyInfoBtn = document.getElementById('copyInfoBtn');
+      const actionStatus = document.getElementById('actionStatus');
+      const emailSourceNote = document.getElementById('emailSourceNote');
+      const pageSubject = params.get('subject') || 'Online Banking Support Details';
+      const prefilledEmail = params.get('email') || '';
+      if (prefilledEmail) {
+        supportEmailInput.value = prefilledEmail;
+        emailSourceNote.textContent = 'The page link already included a support email address. You can change it if needed.';
+      }
+
+      function getSupportEmailValue() {
+        return supportEmailInput.value.trim();
+      }
+
+      function isValidEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
+
+      emailSupportBtn.addEventListener('click', function () {
+        const email = getSupportEmailValue();
+        if (!isValidEmail(email)) {
+          actionStatus.textContent = 'Please type a valid support email address first.';
+          supportEmailInput.focus();
+          return;
+        }
+        const href = 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(pageSubject) + '&body=' + encodeURIComponent(makeEmailBody());
+        actionStatus.textContent = 'Opening your email program…';
+        window.location.href = href;
+      });
+
+      copyInfoBtn.addEventListener('click', function () {
+        copyText(makePlainCopyText()).then(function () {
+          actionStatus.textContent = 'Copied the support details to your clipboard.';
+        }).catch(function () {
+          actionStatus.textContent = 'Could not copy automatically on this browser. Please try again or read the details to support.';
+        });
+      });
+
+      supportEmailInput.addEventListener('input', function () {
+        const email = getSupportEmailValue();
+        if (!email) {
+          actionStatus.textContent = 'Type a support email address to enable emailing.';
+        } else if (isValidEmail(email)) {
+          actionStatus.textContent = 'This email looks ready to use.';
+        } else {
+          actionStatus.textContent = 'This does not look like a full email address yet.';
+        }
+      });
+
+      const generatorEmail = document.getElementById('generatorEmail');
+      const generatorSubject = document.getElementById('generatorSubject');
+      const generateLinkBtn = document.getElementById('generateLinkBtn');
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
+      const generatedLinkBox = document.getElementById('generatedLinkBox');
+      const generatorStatus = document.getElementById('generatorStatus');
+
+      generatorEmail.value = prefilledEmail;
+      generatorSubject.value = pageSubject;
+
+      function getBasePageUrl() {
+        return window.location.href.split('?')[0];
+      }
+
+      function buildGeneratedLink() {
+        const email = generatorEmail.value.trim();
+        const subject = generatorSubject.value.trim();
+        if (!isValidEmail(email)) return '';
+        const base = getBasePageUrl();
+        const q = [];
+        q.push('email=' + encodeURIComponent(email));
+        if (subject) q.push('subject=' + encodeURIComponent(subject));
+        return base + '?' + q.join('&');
+      }
+
+      generateLinkBtn.addEventListener('click', function () {
+        const link = buildGeneratedLink();
+        if (!link) {
+          generatorStatus.textContent = 'Please type a valid support email address first.';
+          generatorEmail.focus();
+          return;
+        }
+        generatedLinkBox.textContent = link;
+        generatorStatus.textContent = 'Link generated. You can now copy it.';
+      });
+
+      copyLinkBtn.addEventListener('click', function () {
+        const link = buildGeneratedLink();
+        if (!link) {
+          generatorStatus.textContent = 'Please type a valid support email address first.';
+          generatorEmail.focus();
+          return;
+        }
+        generatedLinkBox.textContent = link;
+        copyText(link).then(function () {
+          generatorStatus.textContent = 'Support link copied to your clipboard.';
+        }).catch(function () {
+          generatorStatus.textContent = 'Could not copy automatically on this browser. Please copy the link shown on screen.';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
