@@ -7,10 +7,12 @@ import CommonProblems from './components/CommonProblems';
 import Marketing from './components/Marketing';
 import Tutorial from './components/Tutorial';
 import KnowledgeBase from './components/KnowledgeBase';
+import SalesDeck from './components/SalesDeck';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showSalesDeck, setShowSalesDeck] = useState(false);
   const [browser] = useState(detect.getBrowserInfo());
   const [os] = useState(detect.getOSInfo());
   const [deviceType] = useState(detect.getDeviceType());
@@ -38,8 +40,12 @@ const App: React.FC = () => {
     const mode = params.get('mode');
     const tutorial = params.get('tutorial');
 
-    if (email || subject || ext || mode === 'tool' || tutorial) {
+    if (email || subject || ext || mode === 'tool' || mode === 'sales' || tutorial) {
       setIsLanding(false);
+    }
+
+    if (mode === 'sales') {
+      setShowSalesDeck(true);
     }
 
     if (tutorial === 'true' || tutorial === '1') {
@@ -295,7 +301,18 @@ const App: React.FC = () => {
   return (
     <main className="wrap">
       {isLanding ? (
-        <Marketing onStart={() => setIsLanding(false)} />
+        <Marketing 
+          onStart={() => setIsLanding(false)} 
+          onShowSalesDeck={() => {
+            setIsLanding(false);
+            setShowSalesDeck(true);
+          }}
+        />
+      ) : showSalesDeck ? (
+        <SalesDeck onBack={() => {
+          setShowSalesDeck(false);
+          setIsLanding(true);
+        }} />
       ) : (
         <>
           {showTutorial && <Tutorial onClose={() => setShowTutorial(false)} />}

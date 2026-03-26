@@ -3,9 +3,10 @@ import CaseStudies from './CaseStudies';
 
 interface MarketingProps {
   onStart: () => void;
+  onShowSalesDeck?: () => void;
 }
 
-const Marketing: React.FC<MarketingProps> = ({ onStart }) => {
+const Marketing: React.FC<MarketingProps> = ({ onStart, onShowSalesDeck }) => {
   return (
     <div className="marketing-page">
       <header className="hero">
@@ -15,9 +16,12 @@ const Marketing: React.FC<MarketingProps> = ({ onStart }) => {
           Gather technical details from your users without the friction, 
           privacy concerns, or technical jargon.
         </p>
-        <div style={{ marginTop: '24px' }}>
+        <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
           <button className="btn btn-primary btn-big" onClick={onStart}>
             Try the Diagnostic Tool
+          </button>
+          <button className="btn btn-neutral btn-big" onClick={onShowSalesDeck}>
+            View Enterprise Sales Deck
           </button>
         </div>
       </header>

@@ -18,8 +18,8 @@
 - [x] **Interactive Tutorials:** Walkthroughs for support staff on how to use UserInfo.
 - [x] **Knowledge Base:** Detailed explanations of what each diagnostic flag means.
 - [x] **Training Materials:** PDF/Video scripts for onboarding new support teams.
-- [ ] **Case Studies:** Real-world examples of how UserInfo reduces support time.
-- [ ] **Sales Deck:** Presentation materials for selling UserInfo to enterprise clients.
+- [x] **Case Studies:** Real-world examples of how UserInfo reduces support time.
+- [x] **Sales Deck:** Presentation materials for selling UserInfo to enterprise clients.
 
 ## Extension Ideas (Future Growth)
 1. **Network Performance:** Ping, Download speed, latency check.
