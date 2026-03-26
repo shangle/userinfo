@@ -69,9 +69,22 @@ const Marketing: React.FC<MarketingProps> = ({ onStart }) => {
           <h3>Technical Coverage</h3>
           <ul className="steps" style={{ listStyleType: 'none', paddingLeft: 0 }}>
             <li><strong>✓ Modern Detection:</strong> Browser engine, versioning, and OS identification.</li>
-            <li><strong>✓ Network Insights:</strong> IP address, ISP, and Geolocation (via client-side API).</li>
+            <li><strong>✓ Network Insights:</strong> Real-time IP address, ISP, and Geolocation detection.</li>
             <li><strong>✓ Hardware Info:</strong> Screen resolution, pixel ratio, and device memory.</li>
           </ul>
+        </div>
+
+        <div className="card" style={{ gridColumn: 'span 12' }}>
+          <h3>Training & Resources</h3>
+          <p>Onboard your support team in minutes with our ready-to-use training materials.</p>
+          <div className="button-row" style={{ marginTop: '12px' }}>
+            <a href="training/support-handbook.md" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+              📄 Support Handbook (PDF Ready)
+            </a>
+            <a href="training/video-script.md" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+              🎬 Video Script (Onboarding)
+            </a>
+          </div>
         </div>
 
         <div className="card notice success" style={{ gridColumn: 'span 12', textAlign: 'center' }}>

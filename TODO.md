@@ -16,8 +16,8 @@
 ## Product Ecosystem & Marketing Suite
 - [x] **Marketing Landing Page:** Professional product pitch with features/benefits.
 - [x] **Interactive Tutorials:** Walkthroughs for support staff on how to use UserInfo.
-- [ ] **Knowledge Base:** Detailed explanations of what each diagnostic flag means.
-- [ ] **Training Materials:** PDF/Video scripts for onboarding new support teams.
+- [x] **Knowledge Base:** Detailed explanations of what each diagnostic flag means.
+- [x] **Training Materials:** PDF/Video scripts for onboarding new support teams.
 - [ ] **Case Studies:** Real-world examples of how UserInfo reduces support time.
 - [ ] **Sales Deck:** Presentation materials for selling UserInfo to enterprise clients.
 
