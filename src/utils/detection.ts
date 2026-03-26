@@ -3,6 +3,14 @@ export interface BrowserInfo {
   version: string;
 }
 
+export interface NetworkInfo {
+  ip: string;
+  isp: string;
+  city: string;
+  region: string;
+  country: string;
+}
+
 export const getBrowserInfo = (): BrowserInfo => {
   const ua = navigator.userAgent || '';
   let name = 'Unknown Browser';
@@ -29,6 +37,29 @@ export const getBrowserInfo = (): BrowserInfo => {
   }
 
   return { name, version };
+};
+
+export const getNetworkInfo = async (): Promise<NetworkInfo> => {
+  try {
+    const response = await fetch('https://ipapi.co/json/');
+    const data = await response.json();
+    return {
+      ip: data.ip || 'Unknown',
+      isp: data.org || 'Unknown',
+      city: data.city || 'Unknown',
+      region: data.region || 'Unknown',
+      country: data.country_name || 'Unknown',
+    };
+  } catch (error) {
+    console.error('Error fetching IP info:', error);
+    return {
+      ip: 'Unknown (Blocked or Offline)',
+      isp: 'Unknown',
+      city: 'Unknown',
+      region: 'Unknown',
+      country: 'Unknown',
+    };
+  }
 };
 
 export const getOSInfo = (): string => {

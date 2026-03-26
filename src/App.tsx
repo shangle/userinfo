@@ -5,6 +5,7 @@ const App: React.FC = () => {
   const [browser] = useState(detect.getBrowserInfo());
   const [os] = useState(detect.getOSInfo());
   const [deviceType] = useState(detect.getDeviceType());
+  const [network, setNetwork] = useState<detect.NetworkInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
   const [generatorEmail, setGeneratorEmail] = useState('');
@@ -14,6 +15,11 @@ const App: React.FC = () => {
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
 
   const now = useMemo(() => new Date(), []);
+
+  useEffect(() => {
+    detect.getNetworkInfo().then(setNetwork);
+  }, []);
+
   const techPairs = useMemo(() => {
     const timeZone = (Intl.DateTimeFormat().resolvedOptions() || {}).timeZone || 'Not available';
     const online = typeof navigator.onLine === 'boolean' ? (navigator.onLine ? 'Yes' : 'No') : 'Unknown';
@@ -38,11 +44,21 @@ const App: React.FC = () => {
     const reducedMotion = detect.reducedMotionPreference();
     const secureContext = window.isSecureContext ? 'Yes' : 'No';
 
-    return [
+    const basePairs = [
       ['Browser name', browser.name],
       ['Browser version', browser.version],
       ['Operating system', os],
       ['Device type', deviceType],
+    ];
+
+    if (network) {
+      basePairs.push(['IP Address', network.ip]);
+      basePairs.push(['ISP', network.isp]);
+      basePairs.push(['Location', `${network.city}, ${network.region}, ${network.country}`]);
+    }
+
+    return [
+      ...basePairs,
       ['User agent', navigator.userAgent || 'Not available'],
       ['Platform', platform],
       ['Vendor', vendor],
@@ -72,7 +88,7 @@ const App: React.FC = () => {
       ['Referrer', referrer],
       ['Current date/time', now.toString()]
     ];
-  }, [browser, os, deviceType, now]);
+  }, [browser, os, deviceType, network, now]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -233,7 +249,7 @@ const App: React.FC = () => {
   return (
     <div className="wrap">
       <section className="hero">
-        <h1>Computer & Browser Helper</h1>
+        <h1>Support Helper</h1>
         <p className="sub">This page is meant to make things easy. If someone from support asks, you can simply read the results out loud from this screen.</p>
         <div className="support-script">
           <div className="label">Read this to Support</div>
@@ -258,8 +274,8 @@ const App: React.FC = () => {
               <div className="big-value">{deviceType}</div>
             </div>
             <div className="big-item">
-              <div className="big-label">Browser Version</div>
-              <div className="big-value">{browser.version}</div>
+              <div className="big-label">IP Address</div>
+              <div className="big-value">{network?.ip || 'Detecting...'}</div>
             </div>
           </div>
           {outdatedWarning && <div className="notice warning">{outdatedWarning}</div>}
@@ -373,7 +389,7 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      <div className="footer">Created by ChoiceOne Bank.</div>
+      <div className="footer">Powered by UserInfo.</div>
     </div>
   );
 };

@@ -1,73 +1,34 @@
-# React + TypeScript + Vite
+# UserInfo: The Secure Support Diagnostic Tool
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**UserInfo** is a professional, extensible, and privacy-first diagnostic tool designed for support teams to quickly gather technical details from users without the friction of manual explanations.
 
-Currently, two official plugins are available:
+## 🚀 Why Use UserInfo?
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Zero-Friction Support:** Users simply open a link and read a script or click one button to share their technical environment.
+- **Privacy-First:** No data is sent to any server automatically. UserInfo is a client-side tool that only shares information when the user explicitly chooses to (via email or copy-paste).
+- **Extensible Architecture:** Built with React and TypeScript, UserInfo is designed to be customized with "extensions" for specific support needs.
+- **Modern & Friendly UI:** A clean, non-intimidating interface that guides users through troubleshooting steps.
 
-## React Compiler
+## 🛠️ Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Automated Detection:** Browser name/version, OS, Device Type, and more.
+- **Network Insights:** Real-time IP address, ISP, and Geolocation detection.
+- **Custom Support Links:** Support teams can generate pre-filled links (email and subject) to make the user experience even smoother.
+- **Contextual Help:** Dynamic troubleshooting steps based on the user's specific browser and OS.
 
-## Expanding the ESLint configuration
+## 🔌 Extensions (Coming Soon)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+UserInfo is moving toward a modular "Extension" system where you can enable or disable specific diagnostic modules via the URL:
+- **`?ext=network`** - Detailed network diagnostics.
+- **`?ext=banking`** - Specific checks for secure banking platforms (Cookies, VPN detection).
+- **`?ext=performance`** - Client-side performance metrics.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📦 Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. **Host it anywhere:** UserInfo is a static site. Deploy it to GitHub Pages, Netlify, or your own server.
+2. **Generate a link:** Use the link generator at the bottom of the page.
+3. **Send to user:** Your user gets a clear, guided diagnostic experience.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+*UserInfo is an open-source project dedicated to making technical support more accessible and secure.*
