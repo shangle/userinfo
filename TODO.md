@@ -9,7 +9,7 @@
 - [x] Add IP Address, ISP, and Geolocation info.
 - [x] Major README overhaul (pitching as a secure support tool).
 - [x] Componentize the UI (Hero, Card, etc.).
-- [ ] **Add "Common Problems" section** (Cookies, VPN, Tor).
+- [x] **Add "Common Problems" section** (Cookies, VPN, Tor).
 - [ ] Implement "Extension Toggle" system (via Query Params & Link Generator).
 - [ ] UI Review & Polishing (Responsive grid, accessible labels).
 
