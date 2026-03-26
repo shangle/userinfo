@@ -42,7 +42,11 @@ const App: React.FC = () => {
   useEffect(() => {
     detect.getNetworkInfo().then(setNetwork);
     detect.getWebRTCInfo().then(setWebrtc);
-    setProtocol(detect.getNetworkProtocolInfo());
+    const initialProtocol = detect.getNetworkProtocolInfo();
+    setProtocol(initialProtocol);
+    detect.getSSLInfo().then(ssl => {
+      setProtocol(prev => prev ? { ...prev, ...ssl } : { ...initialProtocol, ...ssl });
+    });
     setExtensions(detect.detectExtensionConflicts());
   }, []);
 
@@ -140,6 +144,8 @@ const App: React.FC = () => {
       basePairs.push(['Network Protocol', protocol.protocol]);
       basePairs.push(['HTTP/3 Support', protocol.h3Support]);
       basePairs.push(['QUIC Status', protocol.isQuic ? 'Active' : 'Not active']);
+      if (protocol.tlsVersion) basePairs.push(['TLS Version', protocol.tlsVersion]);
+      if (protocol.cipherSuite) basePairs.push(['Cipher Suite', protocol.cipherSuite]);
     }
 
     return [

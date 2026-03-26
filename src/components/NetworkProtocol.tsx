@@ -27,6 +27,14 @@ const NetworkProtocol: React.FC<NetworkProtocolProps> = ({ info }) => {
           <div className="label">QUIC Protocol</div>
           <div className="value">{info.isQuic ? 'Detected' : 'Not Detected'}</div>
         </div>
+        <div className="tech-item">
+          <div className="label">TLS Version</div>
+          <div className="value">{info.tlsVersion || 'Detecting...'}</div>
+        </div>
+        <div className="tech-item">
+          <div className="label">Cipher Suite</div>
+          <div className="value" style={{ fontSize: '0.8em', wordBreak: 'break-all' }}>{info.cipherSuite || 'Detecting...'}</div>
+        </div>
       </div>
 
       <div className="info-box" style={{ marginTop: '12px', fontSize: '0.9em', background: '#f0f9ff', border: '1px solid #e0f2fe', padding: '10px', borderRadius: '6px' }}>

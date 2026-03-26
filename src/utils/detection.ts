@@ -198,7 +198,34 @@ export interface NetworkProtocolInfo {
   isHttp3: boolean;
   isQuic: boolean;
   h3Support: string;
+  tlsVersion?: string;
+  cipherSuite?: string;
 }
+
+export interface SSLInfo {
+  tlsVersion: string;
+  cipherSuite: string;
+  rating: string;
+}
+
+export const getSSLInfo = async (): Promise<SSLInfo> => {
+  try {
+    const response = await fetch('https://www.howsmyssl.com/a/check');
+    const data = await response.json();
+    return {
+      tlsVersion: data.tls_version || 'Unknown',
+      cipherSuite: data.given_cipher_suites?.[0] || 'Unknown',
+      rating: data.rating || 'Unknown'
+    };
+  } catch (error) {
+    console.error('Error fetching SSL info:', error);
+    return {
+      tlsVersion: 'Unavailable',
+      cipherSuite: 'Unavailable',
+      rating: 'Unknown'
+    };
+  }
+};
 
 export interface ExtensionConflictInfo {
   detected: boolean;
