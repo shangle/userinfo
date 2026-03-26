@@ -11,7 +11,7 @@
 - [x] Componentize the UI (Hero, Card, etc.).
 - [x] **Add "Common Problems" section** (Cookies, VPN, Tor).
 - [x] Implement "Extension Toggle" system (via Query Params & Link Generator).
-- [ ] UI Review & Polishing (Responsive grid, accessible labels).
+- [x] UI Review & Polishing (Responsive grid, accessible labels).
 
 ## Product Ecosystem & Marketing Suite
 - [ ] **Marketing Landing Page:** Professional product pitch with features/benefits.
