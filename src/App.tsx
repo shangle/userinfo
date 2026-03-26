@@ -5,9 +5,11 @@ import Hero from './components/Hero';
 import Summary from './components/Summary';
 import CommonProblems from './components/CommonProblems';
 import Marketing from './components/Marketing';
+import Tutorial from './components/Tutorial';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(false);
   const [browser] = useState(detect.getBrowserInfo());
   const [os] = useState(detect.getOSInfo());
   const [deviceType] = useState(detect.getDeviceType());
@@ -33,9 +35,14 @@ const App: React.FC = () => {
     const subject = params.get('subject');
     const ext = params.get('ext');
     const mode = params.get('mode');
+    const tutorial = params.get('tutorial');
 
-    if (email || subject || ext || mode === 'tool') {
+    if (email || subject || ext || mode === 'tool' || tutorial) {
       setIsLanding(false);
+    }
+
+    if (tutorial === 'true' || tutorial === '1') {
+      setShowTutorial(true);
     }
 
     if (email) {
@@ -290,9 +297,13 @@ const App: React.FC = () => {
         <Marketing onStart={() => setIsLanding(false)} />
       ) : (
         <>
-          <div style={{ marginBottom: '16px' }}>
+          {showTutorial && <Tutorial onClose={() => setShowTutorial(false)} />}
+          <div style={{ marginBottom: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button className="btn btn-neutral" onClick={() => setIsLanding(true)}>
               ← Back to Overview
+            </button>
+            <button className="btn btn-secondary" onClick={() => setShowTutorial(true)}>
+              ? Staff Walkthrough
             </button>
           </div>
           <Hero browser={browser} os={os} deviceType={deviceType} />
