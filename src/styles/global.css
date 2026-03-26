@@ -524,3 +524,37 @@
 
     .mono { font-family: Consolas, Menlo, Monaco, monospace; }
     .hidden { display: none !important; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .status-success {
+      background: var(--success-bg);
+      color: var(--success-ink);
+      border: 1px solid var(--success-border);
+    }
+
+    .status-warning {
+      background: var(--warning-bg);
+      color: var(--warning-ink);
+      border: 1px solid var(--warning-border);
+    }
+
+    .status-danger {
+      background: var(--danger-bg);
+      color: var(--danger-ink);
+      border: 1px solid var(--danger-border);
+    }
+
+    .status-neutral {
+      background: var(--soft);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+

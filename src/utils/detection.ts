@@ -239,6 +239,34 @@ export interface MemoryInfo {
   deviceMemory: number | null;
 }
 
+export interface SecurityInfo {
+  crossOriginIsolated: boolean;
+  isSecureContext: boolean;
+  cookiesEnabled: boolean;
+  doNotTrack: string;
+  localStorageAvailable: boolean;
+  sessionStorageAvailable: boolean;
+  serviceWorkerSupported: boolean;
+  pdfViewerEnabled: boolean;
+  webdriver: boolean;
+  privacySandbox: boolean;
+}
+
+export const getSecurityInfo = (): SecurityInfo => {
+  return {
+    crossOriginIsolated: (window as any).crossOriginIsolated || false,
+    isSecureContext: window.isSecureContext || false,
+    cookiesEnabled: navigator.cookieEnabled || false,
+    doNotTrack: doNotTrackStatus(),
+    localStorageAvailable: localStorageStatus() === 'Available',
+    sessionStorageAvailable: sessionStorageStatus() === 'Available',
+    serviceWorkerSupported: 'serviceWorker' in navigator,
+    pdfViewerEnabled: navigator.pdfViewerEnabled || false,
+    webdriver: navigator.webdriver || false,
+    privacySandbox: !!(navigator as any).scheduling || !!(document as any).interestCohort,
+  };
+};
+
 export interface ThreadingInfo {
   webWorkersSupported: boolean;
   sharedArrayBufferSupported: boolean;

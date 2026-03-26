@@ -16,6 +16,7 @@ import MemoryDiagnostics from './components/MemoryDiagnostics';
 import MediaCapabilities from './components/MediaCapabilities';
 import FontDetection from './components/FontDetection';
 import PeripheralScan from './components/PeripheralScan';
+import SecurityAudit from './components/SecurityAudit';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -34,6 +35,7 @@ const App: React.FC = () => {
   const [fonts, setFonts] = useState<detect.FontInfo | null>(null);
   const [peripherals, setPeripherals] = useState<detect.PeripheralInfo | null>(null);
   const [extensions, setExtensions] = useState<detect.ExtensionConflictInfo | null>(null);
+  const [security, setSecurity] = useState<detect.SecurityInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
   const [generatorEmail, setGeneratorEmail] = useState('');
@@ -41,7 +43,7 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts', 'peripherals']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts', 'peripherals', 'security']);
 
   const now = useMemo(() => new Date(), []);
 
@@ -57,6 +59,7 @@ const App: React.FC = () => {
     detect.getPeripheralInfo().then(setPeripherals);
     setFonts(detect.detectFonts());
     setExtensions(detect.detectExtensionConflicts());
+    setSecurity(detect.getSecurityInfo());
   }, []);
 
   useEffect(() => {
@@ -121,6 +124,12 @@ const App: React.FC = () => {
       ['Operating system', os],
       ['Device type', deviceType],
     ];
+
+    if (security) {
+      basePairs.push(['Cross-Origin Isolated', security.crossOriginIsolated ? 'Yes' : 'No']);
+      basePairs.push(['Secure Context', security.isSecureContext ? 'Yes' : 'No']);
+      basePairs.push(['Webdriver Active', security.webdriver ? 'Yes' : 'No']);
+    }
 
     if (network) {
       basePairs.push(['IP Address', network.ip]);
@@ -543,6 +552,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('security') && security && (
+              <Card title="Client-Side Security & Headers" className="security">
+                <SecurityAudit info={security} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('kb') && (
               <Card title="Knowledge Base: Understanding your data" className="kb">
                 <KnowledgeBase />
@@ -611,6 +626,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('memory')} onChange={() => toggleExtension('memory')} /> Memory & Threading
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('security')} onChange={() => toggleExtension('security')} /> Security Audit
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('kb')} onChange={() => toggleExtension('kb')} /> Knowledge Base
