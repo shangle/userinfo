@@ -526,3 +526,91 @@ export const getWebRTCInfo = async (): Promise<WebRTCInfo> => {
 
   return info;
 };
+
+export interface FontInfo {
+  available: string[];
+  missing: string[];
+  rendering: {
+    pixelRatio: number;
+    fontSmoothing: string;
+    textRendering: string;
+  };
+}
+
+export const detectFonts = (): FontInfo => {
+  const criticalFonts = [
+    'Arial',
+    'Verdana',
+    'Times New Roman',
+    'Georgia',
+    'Courier New',
+    'Segoe UI',
+    'Roboto',
+    'Helvetica',
+    'Inter',
+    'Open Sans',
+    'Tahoma',
+    'Trebuchet MS',
+    'Impact',
+    'Comic Sans MS'
+  ];
+
+  const available: string[] = [];
+  const missing: string[] = [];
+
+  // Create a hidden container for font detection
+  const container = document.createElement('span');
+  container.style.visibility = 'hidden';
+  container.style.position = 'absolute';
+  container.style.top = '-9999px';
+  container.style.fontSize = '72px';
+  container.innerHTML = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  document.body.appendChild(container);
+
+  const checkFont = (fontName: string) => {
+    // Compare width against generic fallbacks
+    const fallbacks = ['monospace', 'sans-serif', 'serif'];
+    let isDifferent = false;
+
+    for (const fallback of fallbacks) {
+      container.style.fontFamily = fallback;
+      const fallbackWidth = container.offsetWidth;
+
+      container.style.fontFamily = `"${fontName}", ${fallback}`;
+      const fontWidth = container.offsetWidth;
+
+      if (fontWidth !== fallbackWidth) {
+        isDifferent = true;
+        break;
+      }
+    }
+
+    // Some fonts might have the same width as fallback for some characters, 
+    // but usually 72px and long string is enough to see difference.
+    // Also check if the font is actually loaded if we can.
+    if (isDifferent || (document as any).fonts?.check?.(`12px "${fontName}"`)) {
+      available.push(fontName);
+    } else {
+      missing.push(fontName);
+    }
+  };
+
+  criticalFonts.forEach(checkFont);
+  document.body.removeChild(container);
+
+  // Detect rendering characteristics
+  const rendering = {
+    pixelRatio: window.devicePixelRatio || 1,
+    fontSmoothing: 'Unknown',
+    textRendering: 'auto'
+  };
+
+  // Check for font-smoothing support and active state (best effort)
+  if (window.getComputedStyle) {
+    const style = window.getComputedStyle(document.body);
+    rendering.fontSmoothing = (style as any).webkitFontSmoothing || (style as any).mozOsxFontSmoothing || 'default';
+    rendering.textRendering = style.textRendering || 'auto';
+  }
+
+  return { available, missing, rendering };
+};

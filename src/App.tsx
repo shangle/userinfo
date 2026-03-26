@@ -14,6 +14,7 @@ import NetworkProtocol from './components/NetworkProtocol';
 import ExtensionConflicts from './components/ExtensionConflicts';
 import MemoryDiagnostics from './components/MemoryDiagnostics';
 import MediaCapabilities from './components/MediaCapabilities';
+import FontDetection from './components/FontDetection';
 
 const App: React.FC = () => {
   const [isLanding, setIsLanding] = useState(true);
@@ -29,6 +30,7 @@ const App: React.FC = () => {
   const [webrtc, setWebrtc] = useState<detect.WebRTCInfo | null>(null);
   const [protocol, setProtocol] = useState<detect.NetworkProtocolInfo | null>(null);
   const [media, setMedia] = useState<detect.MediaCapabilitiesInfo | null>(null);
+  const [fonts, setFonts] = useState<detect.FontInfo | null>(null);
   const [extensions, setExtensions] = useState<detect.ExtensionConflictInfo | null>(null);
   const [supportEmail, setSupportEmail] = useState('');
   const [showAllHelp, setShowAllHelp] = useState(false);
@@ -37,7 +39,7 @@ const App: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [actionStatus, setActionStatus] = useState('When ready, support can have you email or copy your device details.');
   const [generatorStatus, setGeneratorStatus] = useState('Tip: you can send the copied link by email, text message, or chat.');
-  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media']);
+  const [enabledExtensions, setEnabledExtensions] = useState<string[]>(['help', 'common', 'tech', 'webrtc', 'gpu', 'protocol', 'extensions', 'memory', 'generator', 'kb', 'media', 'fonts']);
 
   const now = useMemo(() => new Date(), []);
 
@@ -50,6 +52,7 @@ const App: React.FC = () => {
       setProtocol(prev => prev ? { ...prev, ...ssl } : { ...initialProtocol, ...ssl });
     });
     detect.getMediaCapabilitiesInfo().then(setMedia);
+    setFonts(detect.detectFonts());
     setExtensions(detect.detectExtensionConflicts());
   }, []);
 
@@ -157,6 +160,12 @@ const App: React.FC = () => {
       basePairs.push(['FairPlay DRM', media.fairplay ? 'Supported' : 'Not supported']);
       basePairs.push(['HDCP Status', media.hdcpStatus]);
       basePairs.push(['1080p Decoding', media.decodingInfo.supported ? 'Supported' : 'Not supported']);
+    }
+
+    if (fonts) {
+      basePairs.push(['Available Fonts', fonts.available.length + ' detected']);
+      basePairs.push(['Font Smoothing', fonts.rendering.fontSmoothing]);
+      basePairs.push(['Text Rendering', fonts.rendering.textRendering]);
     }
 
     return [
@@ -493,6 +502,12 @@ const App: React.FC = () => {
               </Card>
             )}
 
+            {enabledExtensions.includes('fonts') && (
+              <Card title="Font Availability & Rendering" className="fonts">
+                <FontDetection info={fonts} />
+              </Card>
+            )}
+
             {enabledExtensions.includes('media') && (
               <Card title="Media Capabilities & DRM Check" className="media">
                 <MediaCapabilities info={media} />
@@ -564,6 +579,9 @@ const App: React.FC = () => {
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('gpu')} onChange={() => toggleExtension('gpu')} /> GPU Audit
+                    </label>
+                    <label className="toggle-item">
+                      <input type="checkbox" checked={enabledExtensions.includes('fonts')} onChange={() => toggleExtension('fonts')} /> Font Detection
                     </label>
                     <label className="toggle-item">
                       <input type="checkbox" checked={enabledExtensions.includes('media')} onChange={() => toggleExtension('media')} /> Media & DRM
