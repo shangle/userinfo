@@ -38,7 +38,7 @@ const MediaCapabilities: React.FC<MediaCapabilitiesProps> = ({ info }) => {
       </div>
 
       <div className="sub-section" style={{ marginTop: '16px' }}>
-        <h4 style={{ fontSize: '0.9em', marginBottom: '8px', color: '#666' }}>Video Decoding (1080p 60fps)</h4>
+        <h3 style={{ fontSize: '0.95em', marginBottom: '8px', color: '#666' }}>Video Decoding (1080p 60fps)</h3>
         <div className="tech-grid">
           <div className="tech-item">
             <div className="label">Supported</div>

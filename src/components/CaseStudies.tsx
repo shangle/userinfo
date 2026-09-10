@@ -30,7 +30,7 @@ const CaseStudies: React.FC = () => {
       <div className="tech-grid">
         {cases.map((c, i) => (
           <div key={i} className="tech-item" style={{ borderLeft: '4px solid var(--accent-2)' }}>
-            <div className="label" style={{ color: 'var(--accent)', fontSize: '1.1rem' }}>{c.metric}</div>
+            <div className="label" style={{ color: '#b85000', fontSize: '1.1rem' }}>{c.metric}</div>
             <h3 style={{ margin: '8px 0' }}>{c.title}</h3>
             <p className="value" style={{ fontSize: '0.95rem', color: 'var(--muted)' }}>{c.description}</p>
             <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>

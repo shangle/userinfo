@@ -21,7 +21,8 @@ import {
   getMemoryInfo,
   getThreadingInfo,
   detectExtensionConflicts,
-  getBatteryInfo
+  getBatteryInfo,
+  getPeripheralInfo
 } from './detection';
 
 describe('detection utils', () => {
@@ -628,6 +629,59 @@ describe('detection utils', () => {
       const info = await getBatteryInfo();
       expect(info.isLowPowerMode).toBe(true);
       expect(info.powerSavingHint).toContain('Likely');
+    });
+  });
+
+  describe('getPeripheralInfo', () => {
+    it('returns empty peripherals when APIs not present', async () => {
+      vi.stubGlobal('navigator', {});
+      const info = await getPeripheralInfo();
+      expect(info.gamepads).toHaveLength(0);
+      expect(info.midi.supported).toBe(false);
+      expect(info.midi.inputs).toHaveLength(0);
+      expect(info.midi.outputs).toHaveLength(0);
+    });
+
+    it('detects gamepads and queries midi when permission granted', async () => {
+      const mockGamepads = [
+        { id: 'Xbox Controller', index: 0, mapping: 'standard', buttons: [{}, {}], axes: [0, 0] }
+      ];
+      const mockMidi = {
+        inputs: [{ name: 'Keyboard', manufacturer: 'Yamaha', state: 'connected' }],
+        outputs: [{ name: 'Synth', manufacturer: 'Roland', state: 'connected' }]
+      };
+      vi.stubGlobal('navigator', {
+        getGamepads: vi.fn().mockReturnValue(mockGamepads),
+        requestMIDIAccess: vi.fn().mockResolvedValue(mockMidi),
+        permissions: {
+          query: vi.fn().mockResolvedValue({ state: 'granted' })
+        }
+      });
+
+      const info = await getPeripheralInfo();
+      expect(info.gamepads).toHaveLength(1);
+      expect(info.gamepads[0].id).toBe('Xbox Controller');
+      expect(info.midi.supported).toBe(true);
+      expect(info.midi.inputs).toHaveLength(1);
+      expect(info.midi.inputs[0].name).toBe('Keyboard');
+      expect(info.midi.outputs).toHaveLength(1);
+      expect(info.midi.outputs[0].name).toBe('Synth');
+    });
+
+    it('does not request MIDI access if permission is prompt', async () => {
+      const requestMIDISpy = vi.fn();
+      vi.stubGlobal('navigator', {
+        requestMIDIAccess: requestMIDISpy,
+        permissions: {
+          query: vi.fn().mockResolvedValue({ state: 'prompt' })
+        }
+      });
+
+      const info = await getPeripheralInfo();
+      expect(info.midi.supported).toBe(true);
+      expect(requestMIDISpy).not.toHaveBeenCalled();
+      expect(info.midi.inputs).toHaveLength(0);
+      expect(info.midi.outputs).toHaveLength(0);
     });
   });
 });

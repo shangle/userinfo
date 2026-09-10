@@ -66,7 +66,7 @@ const KnowledgeBase: React.FC = () => {
       <div className="kb-grid">
         {flags.map((flag, i) => (
           <div key={i} className="kb-item">
-            <h4 className="kb-title">{flag.title}</h4>
+            <h3 className="kb-title">{flag.title}</h3>
             <p className="kb-description">{flag.description}</p>
           </div>
         ))}

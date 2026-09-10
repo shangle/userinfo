@@ -691,21 +691,32 @@ export const getPeripheralInfo = async (): Promise<PeripheralInfo> => {
   // Detect MIDI
   if (info.midi.supported) {
     try {
-      const midiAccess = await navigator.requestMIDIAccess({ sysex: false });
-      midiAccess.inputs.forEach((input: any) => {
-        info.midi.inputs.push({
-          name: input.name || 'Unknown',
-          manufacturer: input.manufacturer || 'Unknown',
-          state: input.state || 'Unknown'
+      let canAccess = false;
+      if ('permissions' in navigator && navigator.permissions?.query) {
+        try {
+          const perm = await navigator.permissions.query({ name: 'midi' as PermissionName });
+          canAccess = perm.state === 'granted';
+        } catch {
+          canAccess = false;
+        }
+      }
+      if (canAccess) {
+        const midiAccess = await (navigator as any).requestMIDIAccess({ sysex: false });
+        midiAccess.inputs.forEach((input: any) => {
+          info.midi.inputs.push({
+            name: input.name || 'Unknown',
+            manufacturer: input.manufacturer || 'Unknown',
+            state: input.state || 'Unknown'
+          });
         });
-      });
-      midiAccess.outputs.forEach((output: any) => {
-        info.midi.outputs.push({
-          name: output.name || 'Unknown',
-          manufacturer: output.manufacturer || 'Unknown',
-          state: output.state || 'Unknown'
+        midiAccess.outputs.forEach((output: any) => {
+          info.midi.outputs.push({
+            name: output.name || 'Unknown',
+            manufacturer: output.manufacturer || 'Unknown',
+            state: output.state || 'Unknown'
+          });
         });
-      });
+      }
     } catch (e) {
       console.error('Error detecting MIDI devices:', e);
     }
